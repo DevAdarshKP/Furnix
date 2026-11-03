@@ -1,0 +1,22 @@
+{
+  "name": "furnix-chair-exploded",
+  "frameCount": 109,
+  "width": 1920,
+  "height": 1080,
+  "aspectRatio": 1.777777778,
+  "fps": 18,
+  "duration": 6.06,
+  "filenamePattern": "frame_{index}.webp",
+  "indexPadding": 4,
+  "startIndex": 1,
+  "endIndex": 109,
+  "format": "image/webp",
+  "totalSizeBytes": 9278082,
+  "averageFrameSizeBytes": 85119,
+  "source": {
+    "filename": "exploded vdo 2.mp4",
+    "resolution": "1920x1080",
+    "durationSeconds": 6.06,
+    "fps": 30
+  }
+}

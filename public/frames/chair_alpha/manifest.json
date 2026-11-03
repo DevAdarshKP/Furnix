@@ -1,0 +1,16 @@
+{
+  "name": "furnix-chair-alpha",
+  "frameCount": 109,
+  "width": 1920,
+  "height": 1080,
+  "aspectRatio": 1.777777778,
+  "fps": 18,
+  "duration": 6.06,
+  "filenamePattern": "frame_{index}.webp",
+  "indexPadding": 4,
+  "startIndex": 1,
+  "endIndex": 109,
+  "format": "image/webp",
+  "hasAlpha": true,
+  "background": "transparent"
+}
