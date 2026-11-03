@@ -185,21 +185,18 @@ export default function CompleteCollectionPage() {
         </div>
 
         {/* Section Header with Category Filter Tabs (Matching reference design) */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-10 sm:pb-12 border-b border-[#E6DFD5]">
-          <div className="space-y-2">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 sm:pb-10 border-b border-[#E6DFD5]">
+          <div className="space-y-1.5 shrink-0">
             <span className="text-[11px] uppercase font-bold tracking-[0.24em] text-[#8C8477] block">
               MOST LOVED
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold tracking-tight text-[#141210]">
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] xl:text-[46px] font-sans font-bold tracking-tight text-[#141210]">
               This week&apos;s favourites
             </h1>
-            <p className="text-xs sm:text-sm text-[#7A7367] max-w-xl leading-relaxed pt-1">
-              Explore our extended curation of seating, handcrafted materials, and architectural objects.
-            </p>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2 self-start lg:self-end">
+          {/* Filter Pills - Strictly single line, properly aligned */}
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap overflow-x-auto no-scrollbar scroll-smooth py-1 self-start lg:self-end max-w-full">
             {categories.map((cat) => {
               const isActive = selectedCategory === cat;
               return (
@@ -207,7 +204,7 @@ export default function CompleteCollectionPage() {
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                  className={`shrink-0 whitespace-nowrap px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer ${
                     isActive
                       ? "bg-[#141210] text-[#FAF8F5] shadow-xs"
                       : "bg-transparent text-[#7A7367] hover:text-[#141210] hover:bg-black/5"
