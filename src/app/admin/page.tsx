@@ -358,7 +358,7 @@ export default function AdminDashboardPage() {
           title: "Design Heritage",
           content: formData.storyContent,
           linkText: "EXPLORE ARCHIVE",
-          linkHref: "/#collections",
+          linkHref: "/products",
         },
       };
 

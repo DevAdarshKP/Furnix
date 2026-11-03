@@ -153,11 +153,11 @@ export function SingleProductView({ product }: SingleProductViewProps) {
               HOME
             </Link>
             <span className="text-[#C5BEB3]">/</span>
-            <Link href="/#collections" className="hover:text-[#141210] transition-colors">
+            <Link href="/products" className="hover:text-[#141210] transition-colors">
               COLLECTION
             </Link>
             <span className="text-[#C5BEB3]">/</span>
-            <Link href="/#collections" className="hover:text-[#141210] transition-colors">
+            <Link href="/products" className="hover:text-[#141210] transition-colors">
               {product.breadcrumbCategory}
             </Link>
             <span className="text-[#C5BEB3]">/</span>
@@ -498,7 +498,7 @@ export function SingleProductView({ product }: SingleProductViewProps) {
               Related Products
             </h2>
             <Link
-              href="/#collections"
+              href="/products"
               className="inline-flex items-center space-x-1 font-sans text-xs font-semibold text-[#BA4C35] hover:text-[#9A3924] uppercase tracking-wider transition-colors"
             >
               <span>VIEW MORE IN THIS CATEGORY</span>

@@ -245,7 +245,7 @@ export default function CartPage() {
                   Return to Archive
                 </button>
                 <Link
-                  href="/#collections"
+                  href="/products"
                   className="px-6 py-3 border border-[#141210] hover:bg-[#141210] hover:text-white text-[#141210] text-xs font-bold uppercase tracking-[0.16em] transition-colors"
                 >
                   Browse Objects
@@ -267,7 +267,7 @@ export default function CartPage() {
                 </p>
                 <div className="pt-2">
                   <Link
-                    href="/#collections"
+                    href="/products"
                     className="inline-flex items-center space-x-2 px-6 py-3.5 bg-[#141210] hover:bg-black text-white text-xs font-bold uppercase tracking-[0.16em] transition-colors active:scale-95 shadow-xs"
                   >
                     <span>EXPLORE COLLECTIONS</span>
@@ -284,7 +284,7 @@ export default function CartPage() {
                       Curated For Calm Spaces
                     </h3>
                     <Link
-                      href="/#collections"
+                      href="/products"
                       className="text-xs font-sans font-semibold text-[#8C8477] hover:text-[#141210] transition-colors"
                     >
                       VIEW ARCHIVE →
@@ -474,7 +474,7 @@ export default function CartPage() {
                 {/* Back to Catalog Link */}
                 <div className="pt-4 flex items-center justify-between">
                   <Link
-                    href="/#collections"
+                    href="/products"
                     className="inline-flex items-center space-x-2 text-xs font-semibold text-[#141210] hover:text-[#BA4C35] transition-colors"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />

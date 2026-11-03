@@ -46,7 +46,7 @@ export function Footer() {
               aria-label="Footer Navigation"
             >
               <Link
-                href="/#collections"
+                href="/products"
                 className="hover:text-[#FAF8F5] transition-colors py-1"
               >
                 Collections

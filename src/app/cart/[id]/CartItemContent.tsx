@@ -170,7 +170,7 @@ export function CartItemContent({ params }: CartItemContentProps) {
                   View Remaining Bag
                 </Link>
                 <Link
-                  href="/#collections"
+                  href="/products"
                   className="px-6 py-3 border border-[#141210] hover:bg-[#141210] hover:text-white text-[#141210] text-xs font-bold uppercase tracking-[0.16em] transition-colors"
                 >
                   Explore Collection
