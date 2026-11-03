@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Plus, Check, Heart, ArrowLeft } from "lucide-react";
+import { Plus, Check, Heart, ArrowLeft, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
@@ -15,7 +15,7 @@ import {
   subscribeToCart,
   openCartDrawer,
 } from "@/lib/cartStore";
-import { PRODUCTS_CATALOG, ProductDetail } from "@/lib/products";
+import { ProductDetail } from "@/lib/products";
 
 // The 4 chairs featured on the home page (which must be excluded from this collection page)
 const HOMEPAGE_FEATURED_IDS = new Set([
@@ -33,60 +33,63 @@ const PASTEL_TINTS = [
   "bg-[#EBE5DC]", // Soft Oatmeal Sand
 ];
 
-// Product badges corresponding to the design reference
+// Product badges for known pieces (with dynamic fallbacks for new database items)
 const BADGE_MAP: Record<string, string> = {
   "green-arm-chair": "Bestseller",
-  "linne-table-lamp": "New",
-  "moln-pendant": "Curated",
-  "stubbe-stool": "Handcrafted",
   "dauphine-armchair": "Archival",
   "koto-lounge": "Low stock",
 };
 
-// Ratings map for rich authentic catalog presentation
+// Ratings map for authentic catalog presentation (with dynamic fallbacks for new database items)
 const RATINGS_MAP: Record<string, { stars: number; count: number }> = {
   "green-arm-chair": { stars: 4.9, count: 312 },
-  "linne-table-lamp": { stars: 4.8, count: 204 },
-  "moln-pendant": { stars: 4.7, count: 158 },
-  "stubbe-stool": { stars: 4.8, count: 121 },
   "dauphine-armchair": { stars: 4.9, count: 96 },
   "koto-lounge": { stars: 5.0, count: 64 },
 };
 
 export default function CompleteCollectionPage() {
   const router = useRouter();
-  const [products, setProducts] = useState<ProductDetail[]>(PRODUCTS_CATALOG);
+  const [products, setProducts] = useState<ProductDetail[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [toastProduct, setToastProduct] = useState<string | null>(null);
   const [addedItemAnim, setAddedItemAnim] = useState<string | null>(null);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
-  // Fetch live products from database on mount & sync with cart
+  // Strictly fetch database products from MongoDB API
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProducts = async () => {
+    const fetchDatabaseProducts = async () => {
       try {
         const res = await fetch("/api/products", { cache: "no-store" });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data.success && Array.isArray(data.products) && data.products.length > 0 && isMounted) {
-          // Merge with fallback catalog so all archival items are available
-          const existingIds = new Set(data.products.map((p: ProductDetail) => p.id));
-          const merged = [...data.products];
-          PRODUCTS_CATALOG.forEach((item) => {
-            if (!existingIds.has(item.id)) {
-              merged.push(item);
-            }
-          });
-          setProducts(merged);
+        if (!res.ok) {
+          if (isMounted) setLoading(false);
+          return;
         }
-      } catch (e) {
-        // Fallback remains active
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products) && isMounted) {
+          // Exclusively use products stored in the database - no dummy data
+          setProducts(data.products);
+        }
+      } catch (err) {
+        console.error("Failed to fetch database products:", err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchDatabaseProducts();
+
+    const handleSync = () => fetchDatabaseProducts();
+    window.addEventListener("focus", handleSync);
+    window.addEventListener("furnix:catalog-updated", handleSync);
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "furnix_catalog_timestamp") {
+        fetchDatabaseProducts();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
 
     const updateLikes = () => {
       const set = new Set<string>();
@@ -101,16 +104,19 @@ export default function CompleteCollectionPage() {
 
     return () => {
       isMounted = false;
+      window.removeEventListener("focus", handleSync);
+      window.removeEventListener("furnix:catalog-updated", handleSync);
+      window.removeEventListener("storage", handleStorage);
       unsubscribe();
     };
-  }, [products]);
+  }, [products.length]);
 
   // Filter out products shown on the homepage
   const otherProducts = useMemo(() => {
     return products.filter((p) => !HOMEPAGE_FEATURED_IDS.has(p.id));
   }, [products]);
 
-  // Extract unique categories for filter tabs
+  // Extract unique categories for filter tabs dynamically from live database items
   const categories = useMemo(() => {
     const set = new Set<string>();
     otherProducts.forEach((p) => {
@@ -192,7 +198,7 @@ export default function CompleteCollectionPage() {
               This week&apos;s favourites
             </h1>
             <p className="text-xs sm:text-sm text-[#7A7367] max-w-xl leading-relaxed pt-1">
-              Explore our extended curation of seating, handcrafted lighting, and architectural objects.
+              Explore our extended curation of seating, handcrafted materials, and architectural objects.
             </p>
           </div>
 
@@ -218,8 +224,23 @@ export default function CompleteCollectionPage() {
           </div>
         </div>
 
-        {/* Products Grid */}
-        {displayedProducts.length === 0 ? (
+        {/* Loading Skeleton */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-7 lg:gap-8 pt-10 sm:pt-12">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-col w-full animate-pulse">
+                <div
+                  className={`w-full aspect-square rounded-[28px] sm:rounded-[32px] ${PASTEL_TINTS[i % PASTEL_TINTS.length]} opacity-60`}
+                />
+                <div className="mt-4 space-y-2 px-1">
+                  <div className="h-3 w-16 bg-[#DDD6CA] rounded-full" />
+                  <div className="h-4 w-32 bg-[#D0C7B8] rounded-full" />
+                  <div className="h-3 w-20 bg-[#DDD6CA] rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : displayedProducts.length === 0 ? (
           <div className="py-24 text-center space-y-3">
             <p className="font-serif text-xl text-[#141210]">No additional items found in this category</p>
             <p className="text-xs text-[#7A7367]">Try selecting “All” or exploring other categories.</p>
@@ -231,11 +252,18 @@ export default function CompleteCollectionPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 lg:gap-8 pt-10 sm:pt-12">
+          /* Products Grid with only Database Items */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-7 lg:gap-8 pt-10 sm:pt-12">
             {displayedProducts.map((product, idx) => {
               const tint = PASTEL_TINTS[idx % PASTEL_TINTS.length];
-              const badge = BADGE_MAP[product.id] || (product.inStock ? "New" : "Low stock");
-              const rating = RATINGS_MAP[product.id] || { stars: 4.8, count: 85 };
+              const badge =
+                BADGE_MAP[product.id] ||
+                (product.inStock === false
+                  ? "Waitlist"
+                  : product.is3D
+                  ? "3D View"
+                  : "Curated");
+              const rating = RATINGS_MAP[product.id] || { stars: 4.9, count: 48 };
               const isLiked = likedIds.has(product.id);
               const isAdded = addedItemAnim === product.id;
 
@@ -283,7 +311,7 @@ export default function CompleteCollectionPage() {
                       />
                     </div>
 
-                    {/* Bottom-Right Circular Add (+) Button matching reference */}
+                    {/* Bottom-Right Circular Add (+) Button */}
                     <button
                       type="button"
                       onClick={(e) => handleAddToCart(e, product)}
@@ -336,7 +364,7 @@ export default function CompleteCollectionPage() {
         )}
       </main>
 
-      {/* Floating Pill Toast Notification (Matching reference design) */}
+      {/* Floating Pill Toast Notification */}
       {toastProduct && (
         <div
           role="status"

@@ -80,11 +80,12 @@ const DEFAULT_FORM: ProductFormData = {
 const SAMPLE_PRESET_IMAGES = [
   { label: "Ochre / Yellow Chair", url: "/images/chair_thumb_yellow.png" },
   { label: "Azure / Blue Chair", url: "/images/chair_thumb_blue.png" },
+  { label: "Green Olive Armchair", url: "/images/atelier_green_armchair.jpg" },
+  { label: "Sculptural Walnut Armchair", url: "/images/wood_armchair.png" },
+  { label: "Modern Midcentury Lounge", url: "/images/midcentury_sofa.png" },
+  { label: "Bergère Leather Wingback", url: "/images/wingback_chair.png" },
   { label: "Nordic Minimalist Armchair", url: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80" },
   { label: "Sculptural Oak Lounge", url: "https://images.unsplash.com/photo-1580481077195-c3a8b4e7a2c2?w=800&q=80" },
-  { label: "Linne Table Lamp", url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80" },
-  { label: "Moln Pendant", url: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&q=80" },
-  { label: "Stubbe Stool", url: "https://images.unsplash.com/photo-1503602642458-232111445657?w=800&q=80" },
 ];
 
 // Decorative mini sparkline waveforms matching the reference dashboard
