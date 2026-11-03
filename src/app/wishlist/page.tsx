@@ -30,6 +30,7 @@ import {
   addToCart,
   addToWishlist,
   openCartDrawer,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 import { getAllProducts, ProductDetail } from "@/lib/products";
 
@@ -51,6 +52,15 @@ export default function WishlistPage() {
         const data = await res.json();
         if (data.success && Array.isArray(data.products) && data.products.length > 0) {
           setLiveCatalog(data.products);
+          setItems((current) =>
+            current.map((it) => {
+              const live = data.products.find((p: ProductDetail) => p.id === it.id);
+              return {
+                ...it,
+                image: cleanImageUrl(live?.image || it.image, it.id),
+              };
+            })
+          );
         }
       } catch (err) {}
     };
@@ -309,14 +319,21 @@ export default function WishlistPage() {
                           href={`/products/${item.id}`}
                           className="w-full h-full relative flex items-center justify-center"
                         >
-                          {item.image && (
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              fill
-                              className="object-contain p-3 group-hover:scale-105 transition-transform duration-500 ease-out"
-                            />
-                          )}
+                          <Image
+                            src={cleanImageUrl(item.image, item.id)}
+                            alt={item.name}
+                            fill
+                            unoptimized
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-contain p-3 group-hover:scale-105 transition-transform duration-500 ease-out"
+                            onError={(e) => {
+                              const target = e.currentTarget as HTMLImageElement;
+                              const fallback = cleanImageUrl("", item.id);
+                              if (target.src !== fallback) {
+                                target.src = fallback;
+                              }
+                            }}
+                          />
                         </Link>
 
                         {/* Top Badges */}

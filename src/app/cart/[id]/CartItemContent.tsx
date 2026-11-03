@@ -32,6 +32,7 @@ import {
   addToWishlist,
   isItemLiked,
   subscribeToCart,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 
 interface CartItemContentProps {
@@ -193,17 +194,23 @@ export function CartItemContent({ params }: CartItemContentProps) {
                     </span>
                   </div>
 
-                  {product.image && (
-                    <div className="w-full h-full relative">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-contain p-4 transition-transform duration-500 hover:scale-105"
-                        priority
-                      />
-                    </div>
-                  )}
+                  <div className="w-full h-full relative">
+                    <Image
+                      src={cleanImageUrl(product.image, product.id)}
+                      alt={product.name}
+                      fill
+                      unoptimized
+                      className="object-contain p-4 transition-transform duration-500 hover:scale-105"
+                      priority
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        const fallback = cleanImageUrl("", product.id);
+                        if (target.src !== fallback) {
+                          target.src = fallback;
+                        }
+                      }}
+                    />
+                  </div>
 
                   <Link
                     href={`/products/${product.id}`}

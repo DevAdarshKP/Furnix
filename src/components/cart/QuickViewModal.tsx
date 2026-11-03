@@ -12,6 +12,7 @@ import {
   toggleLike,
   isItemLiked,
   subscribeToCart,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 
 export function QuickViewModal() {
@@ -77,10 +78,18 @@ export function QuickViewModal() {
             {item.image ? (
               <div className="relative w-full h-[260px] sm:h-[320px]">
                 <Image
-                  src={item.image}
+                  src={cleanImageUrl(item.image, item.id)}
                   alt={item.name}
                   fill
+                  unoptimized
                   className="object-contain"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    const fallback = cleanImageUrl("", item.id);
+                    if (target.src !== fallback) {
+                      target.src = fallback;
+                    }
+                  }}
                 />
               </div>
             ) : (

@@ -14,6 +14,7 @@ import {
   isItemLiked,
   subscribeToCart,
   openCartDrawer,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 import { ProductDetail } from "@/lib/products";
 
@@ -143,7 +144,7 @@ export default function CompleteCollectionPage() {
       category: product.category,
       price: product.price,
       priceNum: product.priceNum,
-      image: product.image,
+      image: cleanImageUrl(product.image, product.id),
     });
 
     setAddedItemAnim(product.id);
@@ -167,7 +168,7 @@ export default function CompleteCollectionPage() {
       category: product.category,
       price: product.price,
       priceNum: product.priceNum,
-      image: product.image,
+      image: cleanImageUrl(product.image, product.id),
     });
   };
 
@@ -300,14 +301,22 @@ export default function CompleteCollectionPage() {
                     {/* Product Cutout Image */}
                     <div className="relative w-full h-full p-6 sm:p-7 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                       <Image
-                        src={product.image || "/images/chair_thumb_yellow.png"}
+                        src={cleanImageUrl(product.image, product.id)}
                         alt={product.name}
                         fill
+                        unoptimized
                         sizes="(max-width: 640px) 280px, (max-width: 1024px) 320px, 360px"
                         className="object-contain pointer-events-none mix-blend-multiply select-none"
                         priority={idx < 4}
                         loading={idx < 4 ? "eager" : "lazy"}
                         draggable={false}
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          const fallback = cleanImageUrl("", product.id);
+                          if (target.src !== fallback) {
+                            target.src = fallback;
+                          }
+                        }}
                       />
                     </div>
 

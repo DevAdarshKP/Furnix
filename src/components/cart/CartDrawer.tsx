@@ -15,6 +15,7 @@ import {
   removeFromCart,
   subscribeToCart,
   showToast,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 
 export function CartDrawer() {
@@ -124,16 +125,21 @@ export function CartDrawer() {
                     onClick={closeCartDrawer}
                     className="w-18 h-18 rounded-xl bg-[#E3DACD] relative overflow-hidden shrink-0 flex items-center justify-center p-1.5 border border-[#DDD3C4]/50 group"
                   >
-                    {item.image ? (
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-contain p-1 transition-transform group-hover:scale-105"
-                      />
-                    ) : (
-                      <span className="text-[10px] font-bold text-[#141210]/40">FURNIX</span>
-                    )}
+                    <Image
+                      src={cleanImageUrl(item.image, item.id)}
+                      alt={item.name}
+                      fill
+                      unoptimized
+                      sizes="72px"
+                      className="object-contain p-1 transition-transform group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        const fallback = cleanImageUrl("", item.id);
+                        if (target.src !== fallback) {
+                          target.src = fallback;
+                        }
+                      }}
+                    />
                   </Link>
 
                   {/* Info */}

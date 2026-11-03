@@ -11,6 +11,7 @@ import {
   toggleLike,
   isItemLiked,
   subscribeToCart,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 
 export type { CollectionItem };
@@ -108,14 +109,22 @@ export function ProductCard({
               }`}
             >
               <Image
-                src={item.image}
+                src={cleanImageUrl(item.image, item.id)}
                 alt={item.name}
                 fill
+                unoptimized
                 sizes="(max-width: 640px) 280px, (max-width: 1024px) 320px, 360px"
                 className="object-contain pointer-events-none mix-blend-multiply select-none"
                 priority
                 loading="eager"
                 draggable={false}
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  const fallback = cleanImageUrl("", item.id);
+                  if (target.src !== fallback) {
+                    target.src = fallback;
+                  }
+                }}
               />
             </div>
           ) : (

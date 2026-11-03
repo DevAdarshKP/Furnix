@@ -32,6 +32,7 @@ import {
   subscribeToCart,
   showToast,
   addToCart,
+  cleanImageUrl,
 } from "@/lib/cartStore";
 import { getAllProducts, ProductDetail } from "@/lib/products";
 
@@ -60,6 +61,15 @@ export default function CartPage() {
         const data = await res.json();
         if (data.success && Array.isArray(data.products) && data.products.length > 0) {
           setLiveCatalog(data.products);
+          setItems((current) =>
+            current.map((it) => {
+              const live = data.products.find((p: ProductDetail) => p.id === it.id);
+              return {
+                ...it,
+                image: cleanImageUrl(live?.image || it.image, it.id),
+              };
+            })
+          );
         }
       } catch (err) {}
     };
@@ -380,14 +390,21 @@ export default function CartPage() {
                             href={`/cart/${item.id}`}
                             className="w-20 h-20 sm:w-24 sm:h-24 bg-[#EFEAE2] flex-shrink-0 relative overflow-hidden group"
                           >
-                            {item.image && (
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                className="object-contain p-1.5 group-hover:scale-105 transition-transform duration-300"
-                              />
-                            )}
+                            <Image
+                              src={cleanImageUrl(item.image, item.id)}
+                              alt={item.name}
+                              fill
+                              unoptimized
+                              sizes="(max-width: 640px) 80px, 96px"
+                              className="object-contain p-1.5 group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                const target = e.currentTarget as HTMLImageElement;
+                                const fallback = cleanImageUrl("", item.id);
+                                if (target.src !== fallback) {
+                                  target.src = fallback;
+                                }
+                              }}
+                            />
                           </Link>
 
                           <div className="space-y-1">

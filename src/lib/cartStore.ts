@@ -80,18 +80,60 @@ function saveToStorage() {
   }
 }
 
+// Known product image fallbacks ensuring no broken thumbnails
+export const KNOWN_PRODUCT_IMAGES: Record<string, string> = {
+  "day-241-shack15-armchair": "/images/chair_thumb_yellow.png",
+  "cyan-armchair": "/images/cyan_chair.png",
+  "modular-sofa": "/images/modular_blue_sofa.png",
+  "bergere-wingback": "/images/wingback_chair.png",
+  "dauphine-armchair": "/images/wood_armchair.png",
+  "koto-lounge": "/images/midcentury_sofa.png",
+  "green-arm-chair": "/images/atelier_green_armchair.jpg",
+};
+
+export function cleanImageUrl(url?: string, itemId?: string): string {
+  if (!url || typeof url !== "string" || !url.trim() || url === "undefined" || url === "null") {
+    if (itemId && KNOWN_PRODUCT_IMAGES[itemId]) {
+      return KNOWN_PRODUCT_IMAGES[itemId];
+    }
+    return "/images/chair_thumb_yellow.png";
+  }
+  const cleaned = url.trim().replace(/^https?:\/\/localhost:\d+/i, "");
+  if (!cleaned || cleaned === "/" || cleaned.includes("undefined")) {
+    if (itemId && KNOWN_PRODUCT_IMAGES[itemId]) {
+      return KNOWN_PRODUCT_IMAGES[itemId];
+    }
+    return "/images/chair_thumb_yellow.png";
+  }
+  return cleaned;
+}
+
 function loadFromStorage() {
   if (typeof window === "undefined") return;
   try {
     const savedCart = localStorage.getItem("furnix_cart_v2");
     if (savedCart) {
-      cartItems = JSON.parse(savedCart);
+      const parsed = JSON.parse(savedCart);
+      if (Array.isArray(parsed)) {
+        cartItems = parsed.map((item: CartItem) => ({
+          ...item,
+          image: cleanImageUrl(item.image, item.id),
+        }));
+      }
     }
     const savedWishlist = localStorage.getItem("furnix_wishlist_v2");
     if (savedWishlist) {
-      wishlistItems = JSON.parse(savedWishlist);
-      likedItemIds = new Set(wishlistItems.map((i) => i.id));
+      const parsed = JSON.parse(savedWishlist);
+      if (Array.isArray(parsed)) {
+        wishlistItems = parsed.map((item: WishlistItem) => ({
+          ...item,
+          image: cleanImageUrl(item.image, item.id),
+        }));
+        likedItemIds = new Set(wishlistItems.map((i) => i.id));
+      }
     }
+    // Re-save sanitized data to heal local storage immediately
+    saveToStorage();
   } catch (err) {
     console.error("Failed to load from localStorage:", err);
   }
@@ -193,8 +235,12 @@ export function showToast(message: string) {
 
 export function addToCart(item: CollectionItem | WishlistItem, quantity = 1) {
   const existingIndex = cartItems.findIndex((i) => i.id === item.id);
+  const resolvedImage = cleanImageUrl(item.image, item.id);
   if (existingIndex > -1) {
     cartItems[existingIndex].quantity += quantity;
+    if (!cartItems[existingIndex].image || cartItems[existingIndex].image === "/images/chair_thumb_yellow.png") {
+      cartItems[existingIndex].image = resolvedImage;
+    }
   } else {
     cartItems.push({
       id: item.id,
@@ -202,7 +248,7 @@ export function addToCart(item: CollectionItem | WishlistItem, quantity = 1) {
       category: item.category,
       price: item.price,
       priceNum: item.priceNum || parseFloat(item.price.replace(/[^0-9.]/g, "")) || 0,
-      image: item.image,
+      image: resolvedImage,
       quantity,
     });
   }
@@ -259,7 +305,7 @@ export function addToWishlist(item: CollectionItem | WishlistItem) {
       category: item.category,
       price: item.price,
       priceNum: item.priceNum || parseFloat(item.price.replace(/[^0-9.]/g, "")) || 0,
-      image: item.image,
+      image: cleanImageUrl(item.image, item.id),
       material: item.material,
       dimensions: item.dimensions,
       inStock: item.inStock ?? true,

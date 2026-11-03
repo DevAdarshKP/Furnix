@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { ProductDetail, getPrevAndNextProduct, getProductById, getAllProducts } from "@/lib/products";
 import { Product3DViewer } from "./Product3DViewer";
-import { addToCart, openCartDrawer, isItemLiked, toggleLike, subscribeToCart } from "@/lib/cartStore";
+import { addToCart, openCartDrawer, isItemLiked, toggleLike, subscribeToCart, cleanImageUrl } from "@/lib/cartStore";
 
 interface SingleProductViewProps {
   product: ProductDetail;
@@ -518,11 +518,19 @@ export function SingleProductView({ product }: SingleProductViewProps) {
                 <div className="relative w-full aspect-square rounded-2xl bg-[#F4EFEA] border border-[#E8E2D8] flex items-center justify-center p-6 transition-all duration-300 group-hover:shadow-md group-hover:border-[#DDD5C7] overflow-hidden">
                   <div className="relative w-full h-full flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                     <Image
-                      src={rel.image}
+                      src={cleanImageUrl(rel.image, rel.id)}
                       alt={rel.name}
                       fill
+                      unoptimized
                       sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 280px"
                       className="object-contain pointer-events-none select-none mix-blend-multiply"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        const fallback = cleanImageUrl("", rel.id);
+                        if (target.src !== fallback) {
+                          target.src = fallback;
+                        }
+                      }}
                     />
                   </div>
                 </div>
