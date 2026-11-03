@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Plus,
   Search,
-  Filter,
   ExternalLink,
   Edit2,
   Trash2,
@@ -17,16 +16,21 @@ import {
   LogOut,
   RefreshCw,
   Layers,
-  Sparkles,
   AlertTriangle,
   X,
-  ChevronDown,
   Database,
   Eye,
-  Check,
   Lock,
   UploadCloud,
   Image as ImageIcon,
+  LayoutDashboard,
+  Package,
+  Tags,
+  Store,
+  ChevronRight,
+  Sparkles,
+  Check,
+  Radio,
 } from "lucide-react";
 import { ProductDetail } from "@/lib/products";
 
@@ -78,16 +82,50 @@ const SAMPLE_PRESET_IMAGES = [
   { label: "Azure / Blue Chair", url: "/images/chair_thumb_blue.png" },
   { label: "Nordic Minimalist Armchair", url: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80" },
   { label: "Sculptural Oak Lounge", url: "https://images.unsplash.com/photo-1580481077195-c3a8b4e7a2c2?w=800&q=80" },
-  { label: "Minimalist Birch Desk", url: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800&q=80" },
-  { label: "Ceramic Pedestal Table", url: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80" },
+  { label: "Linne Table Lamp", url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80" },
+  { label: "Moln Pendant", url: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&q=80" },
+  { label: "Stubbe Stool", url: "https://images.unsplash.com/photo-1503602642458-232111445657?w=800&q=80" },
 ];
+
+// Decorative mini sparkline waveforms matching the reference dashboard
+function Sparkline({ color = "emerald" }: { color?: "emerald" | "amber" | "rose" | "gray" }) {
+  const strokeClass =
+    color === "emerald"
+      ? "text-emerald-500"
+      : color === "amber"
+      ? "text-amber-500"
+      : color === "rose"
+      ? "text-rose-400"
+      : "text-[#8C8477]";
+
+  return (
+    <svg
+      className={`w-14 sm:w-16 h-5 ${strokeClass} stroke-current fill-none stroke-[2] opacity-80`}
+      viewBox="0 0 60 20"
+      aria-hidden="true"
+    >
+      <path
+        d="M 2 12 Q 8 6, 14 10 T 26 8 T 38 14 T 50 6 T 58 10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export default function AdminDashboardPage() {
   const router = useRouter();
 
   // Auth & Session
   const [authChecking, setAuthChecking] = useState(true);
-  const [userEmail, setUserEmail] = useState("");
+  const [userEmail, setUserEmail] = useState("admin@furnix.studio");
+
+  // Dynamic Date & Greeting
+  const [todayStr, setTodayStr] = useState("Wednesday, October 14");
+  const [greeting, setGreeting] = useState("Good afternoon");
+
+  // Active Navigation Tab
+  const [activeTab, setActiveTab] = useState<"overview" | "products" | "categories">("overview");
 
   // Product Data
   const [products, setProducts] = useState<ProductDetail[]>([]);
@@ -110,74 +148,7 @@ export default function AdminDashboardPage() {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-
-  const handleFileUpload = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setActionError("Please choose a valid image file (PNG, JPG, WEBP, or SVG).");
-      return;
-    }
-
-    // Instant local preview
-    const localPreviewUrl = URL.createObjectURL(file);
-    setFormData((prev) => ({ ...prev, image: localPreviewUrl }));
-    setIsUploading(true);
-    setUploadProgress(`Uploading ${file.name}...`);
-
-    try {
-      const data = new FormData();
-      data.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-
-      const json = await res.json();
-      if (res.ok && json.success && json.url) {
-        setFormData((prev) => ({ ...prev, image: json.url }));
-        setUploadProgress(null);
-      } else {
-        // Fallback to Base64 Data URL if server upload had an issue
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (typeof reader.result === "string") {
-            setFormData((prev) => ({ ...prev, image: reader.result as string }));
-          }
-        };
-        reader.readAsDataURL(file);
-        setUploadProgress(null);
-      }
-    } catch (err) {
-      // Fallback to Base64 Data URL
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setFormData((prev) => ({ ...prev, image: reader.result as string }));
-        }
-      };
-      reader.readAsDataURL(file);
-      setUploadProgress(null);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  };
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Delete Confirmation
   const [deleteTarget, setDeleteTarget] = useState<ProductDetail | null>(null);
@@ -185,6 +156,20 @@ export default function AdminDashboardPage() {
 
   // Seeding
   const [seeding, setSeeding] = useState(false);
+
+  // Date formatting & greeting on mount
+  useEffect(() => {
+    const now = new Date();
+    setTodayStr(
+      now.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      })
+    );
+    const hour = now.getHours();
+    setGreeting(hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening");
+  }, []);
 
   // 1. Verify Session
   useEffect(() => {
@@ -236,7 +221,68 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // 4. Open Modal for Create
+  // 4. File Upload
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setActionError("Please choose a valid image file (PNG, JPG, WEBP, or SVG).");
+      return;
+    }
+
+    const localPreviewUrl = URL.createObjectURL(file);
+    setFormData((prev) => ({ ...prev, image: localPreviewUrl }));
+    setIsUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+
+    try {
+      const data = new FormData();
+      data.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: data,
+      });
+
+      const json = await res.json();
+      if (res.ok && json.success && json.url) {
+        setFormData((prev) => ({ ...prev, image: json.url }));
+        setUploadProgress(null);
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            setFormData((prev) => ({ ...prev, image: reader.result as string }));
+          }
+        };
+        reader.readAsDataURL(file);
+        setUploadProgress(null);
+      }
+    } catch (err) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setFormData((prev) => ({ ...prev, image: reader.result as string }));
+        }
+      };
+      reader.readAsDataURL(file);
+      setUploadProgress(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+
+  // 5. Open Modal for Create
   const handleOpenCreate = () => {
     setEditingProduct(null);
     setFormData({
@@ -249,7 +295,7 @@ export default function AdminDashboardPage() {
     setIsModalOpen(true);
   };
 
-  // 5. Open Modal for Edit
+  // 6. Open Modal for Edit
   const handleOpenEdit = (p: ProductDetail) => {
     setEditingProduct(p);
     setFormData({
@@ -275,7 +321,7 @@ export default function AdminDashboardPage() {
     setIsModalOpen(true);
   };
 
-  // 6. Handle Create / Edit Submission
+  // 7. Handle Create / Edit Submission
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -283,7 +329,6 @@ export default function AdminDashboardPage() {
     setActionSuccess("");
 
     try {
-      // The default 3D showroom armchair is permanent and cannot be changed or untoggled
       const isDefault3D = editingProduct
         ? editingProduct.id === "day-241-shack15-armchair"
         : formData.id === "day-241-shack15-armchair";
@@ -346,7 +391,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // 7. Instant Toggle Stock
+  // 8. Instant Toggle Stock
   const handleToggleStock = async (product: ProductDetail) => {
     const updatedStatus = !product.inStock;
 
@@ -375,11 +420,10 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // 8. Delete Product
+  // 9. Delete Product
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
 
-    // Protect default 3D showroom model from deletion
     if (deleteTarget.id === "day-241-shack15-armchair") {
       setActionError("The default 3D showroom model (Bolle Lounge Chair) is permanent and cannot be deleted.");
       setDeleteTarget(null);
@@ -411,9 +455,9 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // 9. Reset / Seed Archival Catalog
+  // 10. Reset / Seed Archival Catalog
   const handleSeedCatalog = async () => {
-    if (!confirm("This will restore the 6 original Furnix archival products into MongoDB. Proceed?")) {
+    if (!confirm("This will restore the original Furnix archival products into MongoDB. Proceed?")) {
       return;
     }
     setSeeding(true);
@@ -440,15 +484,12 @@ export default function AdminDashboardPage() {
   // Filtered & Searched Products
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      // Category filter
       if (categoryFilter !== "all" && p.category?.toLowerCase() !== categoryFilter.toLowerCase()) {
         return false;
       }
-      // Stock filter
       if (stockFilter === "inStock" && !p.inStock) return false;
       if (stockFilter === "outOfStock" && p.inStock) return false;
 
-      // Query filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const matchesName = p.name.toLowerCase().includes(query);
@@ -480,436 +521,580 @@ export default function AdminDashboardPage() {
 
   if (authChecking) {
     return (
-      <div className="min-h-screen bg-[#F7F4ED] flex items-center justify-center text-[#141210] font-sans">
+      <div className="min-h-screen bg-[#F3EFE6] flex items-center justify-center text-[#141210] font-sans">
         <div className="flex items-center space-x-3 text-sm text-[#7A7367]">
-          <div className="w-4 h-4 rounded-full border-2 border-[#DDD6CA] border-t-[#141210] animate-spin" />
-          <span>Verifying Admin Studio Access...</span>
+          <div className="w-5 h-5 rounded-full border-2 border-[#DDD6CA] border-t-[#141210] animate-spin" />
+          <span>Loading Furnix Studio...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F4ED] text-[#141210] font-sans selection:bg-[#141210] selection:text-white">
-      {/* ── TOP NAV BAR ────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#E6DFD5] px-6 lg:px-12 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-[#F3EFE6] text-[#141210] font-sans selection:bg-[#141210] selection:text-white flex">
+      {/* ── LEFT SIDEBAR NAVIGATION (Matching design reference) ───────── */}
+      <aside className="w-64 shrink-0 hidden md:flex flex-col justify-between py-6 pl-6 pr-3 min-h-screen sticky top-0">
+        <div className="space-y-7">
+          {/* Brand Logo & Studio Pill */}
+          <div className="flex items-center justify-between pr-2">
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-7 h-7 rounded-full bg-[#141210] text-[#FAF8F5] flex items-center justify-center font-bold text-xs tracking-tight transition-transform group-hover:scale-105">
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current">
+              <div className="w-8 h-8 rounded-full bg-[#141210] text-[#FAF8F5] flex items-center justify-center font-bold text-xs tracking-tight transition-transform group-hover:scale-105">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
                   <path d="M12 2L4 9v13h16V9l-8-7zm0 3.2L18 10v10H6V10l6-4.8z" />
                 </svg>
               </div>
-              <span className="font-sans text-base font-bold tracking-[0.08em] text-[#141210]">
+              <span className="font-sans text-lg font-bold tracking-[0.08em] text-[#141210]">
                 FURNIX
               </span>
             </Link>
-            <span className="text-[#DDD6CA]">/</span>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs uppercase tracking-widest font-semibold text-[#7A7367]">
-                Archival Studio Admin
-              </span>
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono tracking-wide bg-[#EFEAE2] border border-[#DDD6CA] text-[#5C564E]">
-                v2.6 Atlas
-              </span>
-            </div>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-wide bg-[#E8E2D8] text-[#5C564E] font-medium">
+              STUDIO
+            </span>
           </div>
 
-          <div className="flex items-center space-x-3 sm:space-x-5">
-            {/* Live Database status pill */}
-            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white border border-[#E6DFD5] text-xs shadow-2xs">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  dbSource === "database"
-                    ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                    : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
-                }`}
-              />
-              <span className="text-[11px] font-mono text-[#5C564E]">
-                {dbSource === "database" ? "MongoDB Atlas Connected" : "Local Fallback Active"}
-              </span>
-            </div>
+          {/* Nav Items */}
+          <nav className="space-y-1.5" aria-label="Admin Navigation">
+            <button
+              onClick={() => {
+                setActiveTab("overview");
+                setCategoryFilter("all");
+              }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                activeTab === "overview"
+                  ? "bg-[#141210] text-white shadow-xs"
+                  : "text-[#6B655B] hover:text-[#141210] hover:bg-black/5"
+              }`}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <span>Overview</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("products");
+                setCategoryFilter("all");
+              }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                activeTab === "products"
+                  ? "bg-[#141210] text-white shadow-xs"
+                  : "text-[#6B655B] hover:text-[#141210] hover:bg-black/5"
+              }`}
+            >
+              <Package className="w-4 h-4" />
+              <span>Products ({products.length})</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("categories");
+              }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                activeTab === "categories"
+                  ? "bg-[#141210] text-white shadow-xs"
+                  : "text-[#6B655B] hover:text-[#141210] hover:bg-black/5"
+              }`}
+            >
+              <Tags className="w-4 h-4" />
+              <span>Categories ({categories.length})</span>
+            </button>
 
             <Link
               href="/"
               target="_blank"
-              className="text-xs text-[#5C564E] hover:text-[#141210] transition-colors flex items-center space-x-1 py-1.5 px-3 rounded-lg bg-white border border-[#DDD6CA] hover:border-[#141210] shadow-2xs"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium text-[#6B655B] hover:text-[#141210] hover:bg-black/5 transition-all"
             >
-              <span>View Store</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <div className="flex items-center space-x-3">
+                <Store className="w-4 h-4" />
+                <span>Storefront</span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 opacity-60" />
             </Link>
+          </nav>
+        </div>
+
+        {/* Sidebar Bottom Widgets */}
+        <div className="space-y-3 pt-6 border-t border-[#E8E2D8]">
+          {/* Live Sync Status Card */}
+          <div className="p-3 bg-white/70 backdrop-blur-xs rounded-2xl border border-[#E8E2D8]/80 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <span className="text-[11px] font-semibold text-[#141210]">Live Catalog</span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">
+                Online
+              </span>
+            </div>
+            <p className="text-[10px] text-[#7A7367] leading-relaxed">
+              MongoDB Atlas cluster connected with real-time updates.
+            </p>
+          </div>
+
+          {/* User Profile Pill Card */}
+          <div className="p-2.5 bg-white rounded-2xl border border-[#E8E2D8] flex items-center justify-between shadow-2xs">
+            <div className="flex items-center space-x-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-[#141210] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                AD
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-[#141210] block truncate">
+                  Studio Admin
+                </span>
+                <span className="text-[10px] text-[#7A7367] block truncate">
+                  {userEmail}
+                </span>
+              </div>
+            </div>
 
             <button
               onClick={handleLogout}
-              className="text-xs text-[#7A7367] hover:text-rose-700 transition-colors flex items-center space-x-1.5 py-1.5 px-3 rounded-lg bg-white border border-[#DDD6CA] hover:border-rose-300 cursor-pointer shadow-2xs"
-              title="Sign out of Admin Studio"
+              className="p-1.5 text-[#8C8477] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+              title="Logout from Admin Studio"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Logout</span>
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
-      </header>
+      </aside>
 
-      {/* ── MAIN CONTENT CONTAINER ────────────────────────────── */}
-      <main className="max-w-7xl mx-auto px-6 lg:px-12 py-8 space-y-8">
-        
-        {/* Top Notification Alerts */}
-        {actionSuccess && (
-          <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center justify-between transition-all shadow-2xs">
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
-              <span>{actionSuccess}</span>
-            </div>
+      {/* ── MAIN DASHBOARD AREA ────────────────────────────────────────── */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
+        {/* Top Header Row */}
+        <header className="px-6 lg:px-10 pt-7 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-xs text-[#8C8477] font-medium block">
+              {todayStr}
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#141210]">
+              {greeting}, Studio Admin
+            </h1>
+          </div>
+
+          {/* Quick Filter / State Switcher Pills */}
+          <div className="flex items-center space-x-2 self-start sm:self-auto">
             <button
-              onClick={() => setActionSuccess("")}
-              className="text-emerald-700/70 hover:text-emerald-900 cursor-pointer"
+              onClick={() => setStockFilter("all")}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                stockFilter === "all"
+                  ? "bg-[#141210] text-white shadow-xs"
+                  : "bg-white text-[#7A7367] hover:text-[#141210] border border-[#E8E2D8]"
+              }`}
             >
-              <X className="w-3.5 h-3.5" />
+              All
+            </button>
+            <button
+              onClick={() => setStockFilter("inStock")}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                stockFilter === "inStock"
+                  ? "bg-[#141210] text-white shadow-xs"
+                  : "bg-white text-[#7A7367] hover:text-[#141210] border border-[#E8E2D8]"
+              }`}
+            >
+              In Stock
+            </button>
+            <button
+              onClick={() => setStockFilter("outOfStock")}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-tight transition-all cursor-pointer ${
+                stockFilter === "outOfStock"
+                  ? "bg-[#141210] text-white shadow-xs"
+                  : "bg-white text-[#7A7367] hover:text-[#141210] border border-[#E8E2D8]"
+              }`}
+            >
+              Waitlist
             </button>
           </div>
-        )}
+        </header>
 
-        {actionError && (
-          <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center justify-between transition-all shadow-2xs">
-            <div className="flex items-center space-x-2">
-              <AlertTriangle className="w-4 h-4 flex-shrink-0 text-rose-600" />
-              <span>{actionError}</span>
+        {/* Main Content Body */}
+        <main className="px-6 lg:px-10 pb-12 space-y-7 flex-1">
+          {/* Notifications */}
+          {actionSuccess && (
+            <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-2xl flex items-center justify-between transition-all shadow-2xs">
+              <div className="flex items-center space-x-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span className="font-medium">{actionSuccess}</span>
+              </div>
+              <button
+                onClick={() => setActionSuccess("")}
+                className="text-emerald-700/70 hover:text-emerald-900 cursor-pointer p-1"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <button
-              onClick={() => setActionError("")}
-              className="text-rose-700/70 hover:text-rose-900 cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
+          )}
 
-        {/* ── METRICS OVERVIEW CARDS ───────────────────────────── */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
-            <div className="flex items-center justify-between text-[#8C8477]">
-              <span className="text-[10px] uppercase font-bold tracking-[0.16em]">Total Catalog</span>
-              <Layers className="w-4 h-4 text-[#8C8477]" />
+          {actionError && (
+            <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-2xl flex items-center justify-between transition-all shadow-2xs">
+              <div className="flex items-center space-x-2.5">
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span className="font-medium">{actionError}</span>
+              </div>
+              <button
+                onClick={() => setActionError("")}
+                className="text-rose-700/70 hover:text-rose-900 cursor-pointer p-1"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <div className="text-2xl sm:text-3xl font-serif text-[#141210]">{metrics.total}</div>
-            <div className="text-[11px] text-[#8C8477]">Items in active database</div>
-          </div>
+          )}
 
-          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
-            <div className="flex items-center justify-between text-[#8C8477]">
-              <span className="text-[10px] uppercase font-bold tracking-[0.16em]">In Stock</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-serif text-emerald-700">{metrics.inStockCount}</div>
-            <div className="text-[11px] text-[#8C8477]">Available for immediate order</div>
-          </div>
-
-          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
-            <div className="flex items-center justify-between text-[#8C8477]">
-              <span className="text-[10px] uppercase font-bold tracking-[0.16em]">Out of Stock</span>
-              <XCircle className="w-4 h-4 text-rose-500" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-serif text-rose-700">{metrics.outOfStockCount}</div>
-            <div className="text-[11px] text-[#8C8477]">Archival / Waitlist status</div>
-          </div>
-
-          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
-            <div className="flex items-center justify-between text-[#8C8477]">
-              <span className="text-[10px] uppercase font-bold tracking-[0.16em]">3D Interactive</span>
-              <Box className="w-4 h-4 text-amber-600" />
-            </div>
-            <div className="text-2xl sm:text-3xl font-serif text-[#BA4C35]">{metrics.threeDCount}</div>
-            <div className="text-[11px] text-[#8C8477]">Three.js 360° viewport ready</div>
-          </div>
-        </section>
-
-        {/* ── TOOLBAR & ACTIONS ─────────────────────────────────── */}
-        <section className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-2">
-          
-          {/* Search & Filter Bar */}
-          <div className="flex flex-1 flex-wrap items-center gap-3">
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-[240px]">
-              <Search className="w-4 h-4 text-[#8C8477] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title, SKU, or category..."
-                className="w-full bg-white border border-[#DDD6CA] text-xs text-[#141210] placeholder-[#8C8477] pl-9 pr-4 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] transition-colors shadow-2xs"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8477] hover:text-[#141210]"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+          {/* ── 4 STAT METRIC CARDS (Matching reference design) ──────────── */}
+          <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {/* Card 1: Total Catalog */}
+            <div className="p-5 bg-white rounded-3xl border border-[#E8E2D8] shadow-2xs flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between text-[#8C8477]">
+                <span className="text-xs font-semibold">Total Catalog</span>
+                <div className="w-7 h-7 rounded-xl bg-[#F4EFEA] flex items-center justify-center text-[#5C564E]">
+                  <Layers className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold tracking-tight text-[#141210]">
+                {metrics.total}
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center gap-1">
+                  <span>↗</span> 100%
+                </span>
+                <Sparkline color="emerald" />
+              </div>
             </div>
 
-            {/* Category Filter */}
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-white border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] cursor-pointer shadow-2xs"
-            >
-              <option value="all">All Categories ({products.length})</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+            {/* Card 2: In Stock */}
+            <div className="p-5 bg-white rounded-3xl border border-[#E8E2D8] shadow-2xs flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between text-[#8C8477]">
+                <span className="text-xs font-semibold">In Stock</span>
+                <div className="w-7 h-7 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold tracking-tight text-emerald-700">
+                {metrics.inStockCount}
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center gap-1">
+                  <span>↗</span> Live
+                </span>
+                <Sparkline color="emerald" />
+              </div>
+            </div>
 
-            {/* Stock Filter */}
-            <select
-              value={stockFilter}
-              onChange={(e) => setStockFilter(e.target.value)}
-              className="bg-white border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] cursor-pointer shadow-2xs"
-            >
-              <option value="all">Stock: All</option>
-              <option value="inStock">In Stock Only</option>
-              <option value="outOfStock">Out of Stock Only</option>
-            </select>
-          </div>
+            {/* Card 3: Out of Stock */}
+            <div className="p-5 bg-white rounded-3xl border border-[#E8E2D8] shadow-2xs flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between text-[#8C8477]">
+                <span className="text-xs font-semibold">Out of Stock</span>
+                <div className="w-7 h-7 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                  <XCircle className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold tracking-tight text-rose-700">
+                {metrics.outOfStockCount}
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/60">
+                  Waitlist
+                </span>
+                <Sparkline color="rose" />
+              </div>
+            </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-3 self-end md:self-auto">
-            {/* Reset / Re-seed Button */}
-            <button
-              onClick={handleSeedCatalog}
-              disabled={seeding}
-              className="px-3.5 py-2.5 bg-white hover:bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#5C564E] hover:text-[#141210] rounded-xl transition-colors flex items-center space-x-2 cursor-pointer disabled:opacity-50 shadow-2xs"
-              title="Reset or re-seed default 6 Furnix products to MongoDB"
-            >
-              <RotateCcw className={`w-3.5 h-3.5 ${seeding ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">Re-Seed Archive</span>
-            </button>
+            {/* Card 4: 3D Interactive */}
+            <div className="p-5 bg-white rounded-3xl border border-[#E8E2D8] shadow-2xs flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between text-[#8C8477]">
+                <span className="text-xs font-semibold">3D Showroom</span>
+                <div className="w-7 h-7 rounded-xl bg-amber-50 flex items-center justify-center text-amber-700">
+                  <Box className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-700">
+                {metrics.threeDCount}
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
+                  Three.js 360°
+                </span>
+                <Sparkline color="amber" />
+              </div>
+            </div>
+          </section>
 
-            {/* Refresh from DB */}
-            <button
-              onClick={fetchProducts}
-              disabled={loading}
-              className="p-2.5 bg-white hover:bg-[#FAF8F5] border border-[#DDD6CA] text-[#5C564E] hover:text-[#141210] rounded-xl transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
-              title="Refresh product list"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            </button>
+          {/* ── TOOLBAR: Search, Category Filter, and Add Product ─────────── */}
+          <section className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+            <div className="flex flex-1 flex-wrap items-center gap-3">
+              {/* Search Field */}
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-4 h-4 text-[#8C8477] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products by title, SKU, or category..."
+                  className="w-full bg-white border border-[#E8E2D8] rounded-2xl text-xs text-[#141210] placeholder-[#8C8477] pl-9 pr-4 py-2.5 focus:outline-none focus:border-[#141210] transition-colors shadow-2xs"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8477] hover:text-[#141210]"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
 
-            {/* Add New Product Button */}
+              {/* Category Dropdown */}
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="bg-white border border-[#E8E2D8] rounded-2xl text-xs text-[#141210] px-3.5 py-2.5 focus:outline-none focus:border-[#141210] cursor-pointer shadow-2xs font-medium"
+              >
+                <option value="all">All Categories ({products.length})</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+
+              {/* Reset Archive Button */}
+              <button
+                onClick={handleSeedCatalog}
+                disabled={seeding}
+                className="px-3.5 py-2.5 bg-white hover:bg-[#FAF8F5] border border-[#E8E2D8] rounded-2xl text-xs text-[#5C564E] hover:text-[#141210] transition-colors flex items-center space-x-1.5 cursor-pointer disabled:opacity-50 shadow-2xs font-medium"
+                title="Restore default catalog items"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${seeding ? "animate-spin" : ""}`} />
+                <span className="hidden lg:inline">Re-Seed</span>
+              </button>
+
+              {/* Refresh Button */}
+              <button
+                onClick={fetchProducts}
+                disabled={loading}
+                className="p-2.5 bg-white hover:bg-[#FAF8F5] border border-[#E8E2D8] rounded-2xl text-[#5C564E] hover:text-[#141210] transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
+                title="Refresh from MongoDB"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              </button>
+            </div>
+
+            {/* Add Product Button */}
             <button
               onClick={handleOpenCreate}
-              className="px-4 py-2.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center space-x-2 shadow-sm cursor-pointer active:scale-98"
+              className="px-5 py-2.5 bg-[#141210] hover:bg-black text-[#FAF8F5] rounded-2xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center space-x-2 shadow-sm cursor-pointer active:scale-98 self-end sm:self-auto shrink-0"
             >
               <Plus className="w-4 h-4" />
               <span>Add Product</span>
             </button>
-          </div>
-        </section>
+          </section>
 
-        {/* ── PRODUCTS TABLE ────────────────────────────────────── */}
-        <section className="bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_16px_rgba(20,18,16,0.04)] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-[#E6DFD5] bg-[#FAF8F5] text-[#7A7367] text-[10px] uppercase font-bold tracking-[0.14em]">
-                  <th className="py-3.5 px-4">Item</th>
-                  <th className="py-3.5 px-4">SKU / ID</th>
-                  <th className="py-3.5 px-4">Category</th>
-                  <th className="py-3.5 px-4">Price</th>
-                  <th className="py-3.5 px-4 text-center">Status</th>
-                  <th className="py-3.5 px-4 text-center">3D Mode</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
+          {/* ── CATALOG PRODUCTS TABLE ───────────────────────────────────── */}
+          <section className="bg-white rounded-3xl border border-[#E8E2D8] shadow-2xs overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#E8E2D8] flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <h2 className="text-sm font-bold text-[#141210]">Catalog Products</h2>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F4EFEA] text-[#5C564E]">
+                  {filteredProducts.length} items
+                </span>
+              </div>
+              <div className="flex items-center space-x-1 font-mono text-[10px] text-[#7A7367]">
+                <Database className="w-3 h-3 text-emerald-600" />
+                <span>MongoDB Atlas</span>
+              </div>
+            </div>
 
-              <tbody className="divide-y divide-[#EFEAE2]">
-                {loading && products.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-16 text-center text-[#7A7367]">
-                      <div className="flex flex-col items-center justify-center space-y-3">
-                        <div className="w-5 h-5 rounded-full border-2 border-[#DDD6CA] border-t-[#141210] animate-spin" />
-                        <span className="text-xs">Accessing MongoDB Atlas collection...</span>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-[#E8E2D8] bg-[#FAF8F5]/60 text-[#8C8477] text-[10px] uppercase font-bold tracking-[0.14em]">
+                    <th className="py-4 px-6">Product</th>
+                    <th className="py-4 px-4">SKU / ID</th>
+                    <th className="py-4 px-4">Category</th>
+                    <th className="py-4 px-4">Price</th>
+                    <th className="py-4 px-4 text-center">Stock Availability</th>
+                    <th className="py-4 px-4 text-center">3D Mode</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
-                ) : filteredProducts.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-16 text-center text-[#7A7367]">
-                      <p className="text-sm text-[#141210] font-serif">No products matched your criteria</p>
-                      <p className="text-xs mt-1 text-[#8C8477]">
-                        Try refining your search query or reset the filters.
-                      </p>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredProducts.map((product) => (
-                    <tr
-                      key={product.id}
-                      className="hover:bg-[#FAF7F2] transition-colors group"
-                    >
-                      {/* Product Thumbnail & Title */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center space-x-3.5">
-                          <div className="w-12 h-12 bg-[#EFEAE2] border border-[#DDD6CA] rounded-xl flex-shrink-0 flex items-center justify-center p-1 overflow-hidden">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={product.image || "/images/chair_thumb_yellow.png"}
-                              alt={product.name}
-                              className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform"
-                            />
-                          </div>
-                          <div className="min-w-0">
-                            <span className="font-serif text-sm text-[#141210] font-medium block truncate">
-                              {product.name}
-                            </span>
-                            <span className="text-[11px] text-[#7A7367] block truncate">
-                              {product.subtitle || "Curated Edition"}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
+                </thead>
 
-                      {/* SKU / Slug */}
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-[#7A7367]">
-                        <span className="text-[#141210] font-medium">{product.sku || "FNX-001"}</span>
-                        <span className="block text-[10px] text-[#8C8477] truncate max-w-[140px]">
-                          /{product.id}
-                        </span>
-                      </td>
-
-                      {/* Category */}
-                      <td className="py-3.5 px-4 text-[#5C564E]">
-                        <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] bg-[#FAF8F5] border border-[#E6DFD5] text-[#5C564E]">
-                          {product.category || "Living & Lounge"}
-                        </span>
-                      </td>
-
-                      {/* Price */}
-                      <td className="py-3.5 px-4 font-mono font-medium text-[#141210]">
-                        {product.price}
-                      </td>
-
-                      {/* Stock Toggle */}
-                      <td className="py-3.5 px-4 text-center">
-                        <button
-                          onClick={() => handleToggleStock(product)}
-                          className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all cursor-pointer ${
-                            product.inStock
-                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
-                              : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
-                          }`}
-                          title="Click to toggle stock availability"
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              product.inStock ? "bg-emerald-600" : "bg-rose-600"
-                            }`}
-                          />
-                          <span>{product.inStock ? "IN STOCK" : "OUT OF STOCK"}</span>
-                        </button>
-                      </td>
-
-                      {/* 3D Indicator */}
-                      <td className="py-3.5 px-4 text-center">
-                        {product.id === "day-241-shack15-armchair" ? (
-                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono bg-amber-50 border border-amber-300 text-amber-900 font-semibold shadow-2xs">
-                            <Lock className="w-3 h-3 text-amber-700" />
-                            <span>Default 3D</span>
-                          </span>
-                        ) : product.is3D ? (
-                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-50/80 border border-amber-200 text-amber-800">
-                            <Box className="w-3 h-3" />
-                            <span>3D Mode</span>
-                          </span>
-                        ) : (
-                          <span className="text-[10px] text-[#8C8477] font-mono">2D Still</span>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end space-x-2">
-                          {/* Live preview */}
-                          <Link
-                            href={`/products/${product.id}`}
-                            target="_blank"
-                            className="p-1.5 text-[#7A7367] hover:text-[#141210] hover:bg-[#FAF8F5] rounded-lg border border-transparent hover:border-[#DDD6CA] transition-colors"
-                            title="View on storefront"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </Link>
-
-                          {/* Edit button */}
-                          <button
-                            onClick={() => handleOpenEdit(product)}
-                            className="p-1.5 text-[#7A7367] hover:text-[#141210] hover:bg-[#FAF8F5] rounded-lg border border-transparent hover:border-[#DDD6CA] transition-colors cursor-pointer"
-                            title="Edit product specifications"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Delete button */}
-                          {product.id === "day-241-shack15-armchair" ? (
-                            <button
-                              disabled
-                              className="p-1.5 text-[#C4BCB0] cursor-not-allowed opacity-40 rounded-lg"
-                              title="Default 3D showroom model is locked and cannot be deleted"
-                            >
-                              <Lock className="w-3.5 h-3.5" />
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => setDeleteTarget(product)}
-                              className="p-1.5 text-[#7A7367] hover:text-rose-700 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-200 transition-colors cursor-pointer"
-                              title="Delete product"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
+                <tbody className="divide-y divide-[#EFEAE2]">
+                  {loading && products.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-16 text-center text-[#7A7367]">
+                        <div className="flex flex-col items-center justify-center space-y-3">
+                          <div className="w-5 h-5 rounded-full border-2 border-[#DDD6CA] border-t-[#141210] animate-spin" />
+                          <span className="text-xs">Connecting to MongoDB Atlas...</span>
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : filteredProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-16 text-center text-[#7A7367]">
+                        <p className="text-sm text-[#141210] font-semibold">No products found</p>
+                        <p className="text-xs mt-1 text-[#8C8477]">
+                          Try adjusting your search query or reset the category filter.
+                        </p>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredProducts.map((product) => (
+                      <tr
+                        key={product.id}
+                        className="hover:bg-[#FAF8F5]/80 transition-colors group"
+                      >
+                        {/* Thumbnail & Title */}
+                        <td className="py-3.5 px-6">
+                          <div className="flex items-center space-x-3.5">
+                            <div className="w-12 h-12 bg-[#F4EFEA] rounded-2xl flex-shrink-0 flex items-center justify-center p-1.5 overflow-hidden border border-[#E8E2D8]/60">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={product.image || "/images/chair_thumb_yellow.png"}
+                                alt={product.name}
+                                className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform"
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-semibold text-sm text-[#141210] block truncate">
+                                {product.name}
+                              </span>
+                              <span className="text-[11px] text-[#7A7367] block truncate">
+                                {product.subtitle || "Curated Archival Edition"}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
 
-          {/* Table Footer info */}
-          <div className="p-4 border-t border-[#E6DFD5] bg-[#FAF8F5] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#7A7367] gap-2">
-            <span>
-              Showing {filteredProducts.length} of {products.length} registered products
-            </span>
-            <div className="flex items-center space-x-1 font-mono text-[10px] text-[#5C564E]">
-              <Database className="w-3 h-3 text-emerald-600" />
-              <span>MongoDB Atlas: collection.furnix.products</span>
+                        {/* SKU */}
+                        <td className="py-3.5 px-4 font-mono text-[11px] text-[#7A7367]">
+                          <span className="text-[#141210] font-medium block">{product.sku || "FNX-001"}</span>
+                          <span className="text-[10px] text-[#8C8477] truncate block max-w-[120px]">
+                            /{product.id}
+                          </span>
+                        </td>
+
+                        {/* Category */}
+                        <td className="py-3.5 px-4 text-[#5C564E]">
+                          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-semibold bg-[#F4EFEA] text-[#5C564E]">
+                            {product.category || "Living & Lounge"}
+                          </span>
+                        </td>
+
+                        {/* Price */}
+                        <td className="py-3.5 px-4 font-mono font-bold text-sm text-[#141210]">
+                          {product.price}
+                        </td>
+
+                        {/* Stock Toggle */}
+                        <td className="py-3.5 px-4 text-center">
+                          <button
+                            onClick={() => handleToggleStock(product)}
+                            className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all cursor-pointer ${
+                              product.inStock
+                                ? "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
+                                : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
+                            }`}
+                            title="Click to toggle stock status"
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                product.inStock ? "bg-emerald-600" : "bg-rose-600"
+                              }`}
+                            />
+                            <span>{product.inStock ? "IN STOCK" : "OUT OF STOCK"}</span>
+                          </button>
+                        </td>
+
+                        {/* 3D Indicator */}
+                        <td className="py-3.5 px-4 text-center">
+                          {product.id === "day-241-shack15-armchair" ? (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-mono bg-amber-50 border border-amber-300 text-amber-900 font-semibold shadow-2xs">
+                              <Lock className="w-3 h-3 text-amber-700" />
+                              <span>Default 3D</span>
+                            </span>
+                          ) : product.is3D ? (
+                            <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-mono bg-amber-50/80 border border-amber-200 text-amber-800 font-medium">
+                              <Box className="w-3 h-3" />
+                              <span>3D Mode</span>
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-[#8C8477] font-mono">2D Still</span>
+                          )}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-6 text-right">
+                          <div className="flex items-center justify-end space-x-1.5">
+                            <Link
+                              href={`/products/${product.id}`}
+                              target="_blank"
+                              className="p-2 text-[#7A7367] hover:text-[#141210] hover:bg-[#F4EFEA] rounded-xl transition-colors"
+                              title="View on storefront"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </Link>
+
+                            <button
+                              onClick={() => handleOpenEdit(product)}
+                              className="p-2 text-[#7A7367] hover:text-[#141210] hover:bg-[#F4EFEA] rounded-xl transition-colors cursor-pointer"
+                              title="Edit specifications"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+
+                            {product.id === "day-241-shack15-armchair" ? (
+                              <button
+                                disabled
+                                className="p-2 text-[#C4BCB0] cursor-not-allowed opacity-40 rounded-xl"
+                                title="Default 3D model is permanent and cannot be deleted"
+                              >
+                                <Lock className="w-3.5 h-3.5" />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setDeleteTarget(product)}
+                                className="p-2 text-[#7A7367] hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                                title="Delete product"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </section>
-      </main>
 
-      {/* ── CREATE / EDIT PRODUCT MODAL ───────────────────────── */}
+            {/* Table Footer */}
+            <div className="px-6 py-4 bg-[#FAF8F5]/80 border-t border-[#E8E2D8] flex flex-col sm:flex-row items-center justify-between text-xs text-[#7A7367] gap-2">
+              <span>
+                Showing {filteredProducts.length} of {products.length} registered catalog products
+              </span>
+              <span className="font-mono text-[11px] text-[#8C8477]">
+                Authenticated as: {userEmail}
+              </span>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      {/* ── CREATE / EDIT PRODUCT MODAL (Matching cool & calm aesthetic) ── */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-[#141210]/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white border border-[#E6DFD5] shadow-2xl rounded-2xl relative my-8 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-            
+          <div className="w-full max-w-2xl bg-white border border-[#E8E2D8] shadow-2xl rounded-3xl relative my-8 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
             {/* Modal Header */}
-            <div className="p-6 border-b border-[#E6DFD5] bg-[#FAF8F5] flex items-center justify-between">
+            <div className="p-6 border-b border-[#E8E2D8] bg-[#FAF8F5] flex items-center justify-between">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#8C8477] block">
                   {editingProduct ? "ARCHIVAL UPDATE" : "NEW ARCHIVAL RECORD"}
                 </span>
-                <h2 className="text-xl font-serif text-[#141210]">
+                <h2 className="text-xl font-bold tracking-tight text-[#141210]">
                   {editingProduct ? `Edit “${editingProduct.name}”` : "Create New Catalog Product"}
                 </h2>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 text-[#7A7367] hover:text-[#141210] transition-colors cursor-pointer rounded-lg hover:bg-[#EFEAE2]"
+                className="p-2 text-[#7A7367] hover:text-[#141210] transition-colors cursor-pointer rounded-xl hover:bg-[#EFEAE2]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -986,15 +1171,16 @@ export default function AdminDashboardPage() {
                     className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors cursor-pointer"
                   >
                     <option value="Living & Lounge">Living & Lounge</option>
+                    <option value="Seating">Seating</option>
                     <option value="Armchairs">Armchairs</option>
-                    <option value="Dining & Studio">Dining & Studio</option>
+                    <option value="Dining & Accent">Dining & Accent</option>
                     <option value="Tables & Surfaces">Tables & Surfaces</option>
-                    <option value="Lighting & Objects">Lighting & Objects</option>
+                    <option value="Lighting">Lighting</option>
                   </select>
                 </div>
               </div>
 
-              {/* Manual Device Image Chooser & Preview */}
+              {/* Image Uploader & Device Chooser */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
@@ -1009,7 +1195,6 @@ export default function AdminDashboardPage() {
                   </button>
                 </div>
 
-                {/* Hidden File Input */}
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -1018,7 +1203,6 @@ export default function AdminDashboardPage() {
                   className="hidden"
                 />
 
-                {/* Drag & Drop / Device Chooser Card */}
                 <div
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -1026,14 +1210,13 @@ export default function AdminDashboardPage() {
                   }}
                   onDragLeave={() => setIsDragging(false)}
                   onDrop={handleDrop}
-                  className={`border-2 border-dashed p-4 transition-all duration-200 rounded-xl flex flex-col sm:flex-row items-center gap-4 ${
+                  className={`border-2 border-dashed p-4 transition-all duration-200 rounded-2xl flex flex-col sm:flex-row items-center gap-4 ${
                     isDragging
                       ? "border-[#141210] bg-[#FAF8F5]"
                       : "border-[#DDD6CA] bg-[#FAF8F5] hover:border-[#141210]"
                   }`}
                 >
-                  {/* Image Preview or Placeholder */}
-                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-[#EFEAE2] border border-[#DDD6CA] rounded-xl flex items-center justify-center p-2 flex-shrink-0 overflow-hidden">
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-[#EFEAE2] border border-[#DDD6CA] rounded-2xl flex items-center justify-center p-2 flex-shrink-0 overflow-hidden">
                     {formData.image ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1056,10 +1239,9 @@ export default function AdminDashboardPage() {
                     )}
                   </div>
 
-                  {/* Actions & Instructions */}
                   <div className="flex-1 text-center sm:text-left space-y-2 w-full">
                     <div>
-                      <span className="text-xs font-medium text-[#141210] block">
+                      <span className="text-xs font-semibold text-[#141210] block">
                         {formData.image ? "Image Ready for Archive" : "Select an image from your device"}
                       </span>
                       <span className="text-[11px] text-[#7A7367] block mt-0.5">
@@ -1072,7 +1254,7 @@ export default function AdminDashboardPage() {
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs active:scale-95 disabled:opacity-50"
+                        className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-xs active:scale-95 disabled:opacity-50"
                       >
                         <UploadCloud className="w-3.5 h-3.5" />
                         <span>{formData.image ? "Choose Different Image" : "Choose Image From Device"}</span>
@@ -1082,7 +1264,7 @@ export default function AdminDashboardPage() {
                         <button
                           type="button"
                           onClick={() => setFormData({ ...formData, image: "" })}
-                          className="px-2.5 py-1.5 bg-[#EFEAE2] hover:bg-[#DDD6CA] text-[#5C564E] hover:text-[#141210] rounded-lg text-xs transition-colors cursor-pointer font-medium"
+                          className="px-2.5 py-1.5 bg-[#EFEAE2] hover:bg-[#DDD6CA] text-[#5C564E] hover:text-[#141210] rounded-xl text-xs transition-colors cursor-pointer font-medium"
                         >
                           Clear
                         </button>
@@ -1098,9 +1280,8 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                {/* Optional Manual URL & Presets accordion */}
                 {showUrlInput && (
-                  <div className="p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] rounded-xl space-y-2.5 mt-2 animate-in fade-in duration-150">
+                  <div className="p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] rounded-2xl space-y-2.5 mt-2 animate-in fade-in duration-150">
                     <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                       Direct Image URL or Path
                     </label>
@@ -1109,10 +1290,9 @@ export default function AdminDashboardPage() {
                       value={formData.image}
                       onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                       placeholder="/images/chair_thumb_yellow.png or https://..."
-                      className="w-full bg-white border border-[#DDD6CA] text-xs font-mono text-[#141210] px-3.5 py-2 rounded-lg focus:outline-none focus:border-[#141210]"
+                      className="w-full bg-white border border-[#DDD6CA] text-xs font-mono text-[#141210] px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#141210]"
                     />
 
-                    {/* Presets */}
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                       <span className="text-[10px] text-[#7A7367] font-medium">Presets:</span>
                       {SAMPLE_PRESET_IMAGES.map((preset) => (
@@ -1120,7 +1300,7 @@ export default function AdminDashboardPage() {
                           type="button"
                           key={preset.url}
                           onClick={() => setFormData({ ...formData, image: preset.url })}
-                          className={`text-[10px] px-2.5 py-1 border rounded-lg cursor-pointer transition-colors ${
+                          className={`text-[10px] px-2.5 py-1 border rounded-xl cursor-pointer transition-colors ${
                             formData.image === preset.url
                               ? "bg-[#141210] border-[#141210] text-[#FAF8F5]"
                               : "bg-white border-[#DDD6CA] text-[#5C564E] hover:text-[#141210] hover:border-[#141210]"
@@ -1135,7 +1315,7 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Specs: Material, Origin, Dimensions, Designer */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#E6DFD5]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#E8E2D8]">
                 <div className="space-y-1.5">
                   <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Material & Finish
@@ -1189,7 +1369,7 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* Story / Design Philosophy */}
+              {/* Story */}
               <div className="space-y-1.5">
                 <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                   Design Philosophy & Story
@@ -1203,9 +1383,9 @@ export default function AdminDashboardPage() {
                 />
               </div>
 
-              {/* Availability & Stock Status */}
-              <div className="pt-2 border-t border-[#E6DFD5]">
-                <label className="flex items-center space-x-3 p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] cursor-pointer hover:border-[#141210] rounded-xl transition-colors">
+              {/* Availability */}
+              <div className="pt-2 border-t border-[#E8E2D8]">
+                <label className="flex items-center space-x-3 p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] cursor-pointer hover:border-[#141210] rounded-2xl transition-colors">
                   <input
                     type="checkbox"
                     checked={formData.inStock}
@@ -1223,8 +1403,8 @@ export default function AdminDashboardPage() {
                 </label>
               </div>
 
-              {/* Form Action Buttons */}
-              <div className="pt-4 border-t border-[#E6DFD5] flex items-center justify-end space-x-3">
+              {/* Modal Buttons */}
+              <div className="pt-4 border-t border-[#E8E2D8] flex items-center justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -1235,7 +1415,7 @@ export default function AdminDashboardPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2 shadow-sm active:scale-98"
+                  className="px-6 py-2.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2 shadow-sm active:scale-98"
                 >
                   {submitting ? (
                     <>
@@ -1255,13 +1435,13 @@ export default function AdminDashboardPage() {
       {/* ── DELETE CONFIRMATION DIALOG ────────────────────────── */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 bg-[#141210]/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white border border-rose-200 p-6 shadow-2xl rounded-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="w-full max-w-md bg-white border border-rose-200 p-6 shadow-2xl rounded-3xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-start space-x-3.5">
-              <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center flex-shrink-0 text-rose-600">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center flex-shrink-0 text-rose-600">
                 <Trash2 className="w-4 h-4" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-serif text-lg text-[#141210]">Confirm Product Deletion</h3>
+                <h3 className="text-base font-bold text-[#141210]">Confirm Product Deletion</h3>
                 <p className="text-xs text-[#7A7367] leading-relaxed">
                   Are you sure you want to permanently delete{" "}
                   <strong className="text-[#141210]">“{deleteTarget.name}”</strong> (SKU:{" "}
@@ -1270,9 +1450,9 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] rounded-xl text-[11px] text-[#5C564E]">
+            <div className="p-3.5 bg-[#FAF8F5] border border-[#E8E2D8] rounded-2xl text-[11px] text-[#5C564E]">
               You can restore the default catalog at any time using the{" "}
-              <strong className="text-[#141210]">“Re-Seed Archive”</strong> button.
+              <strong className="text-[#141210]">“Re-Seed”</strong> button.
             </div>
 
             <div className="flex items-center justify-end space-x-3 pt-2">
@@ -1288,7 +1468,7 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={handleDeleteConfirm}
                 disabled={deleting}
-                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2 shadow-sm active:scale-98"
+                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider rounded-2xl transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2 shadow-sm active:scale-98"
               >
                 {deleting ? (
                   <>
@@ -1303,14 +1483,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
-
-      {/* ── FOOTER ────────────────────────────────────────────── */}
-      <footer className="mt-16 border-t border-[#E6DFD5] bg-[#FAF8F5] py-6 px-6 lg:px-12 text-center text-xs text-[#7A7367]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>FURNIX ARCHIVAL STUDIO CMS · Studio Operations</span>
-          <span className="font-mono text-[11px] text-[#8C8477]">Logged in as: {userEmail}</span>
-        </div>
-      </footer>
     </div>
   );
 }
