@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, ShoppingBag, Menu, X, Heart } from "lucide-react";
+import { ShoppingBag, Menu, X, Heart } from "lucide-react";
 import { getCartCount, getWishlistCount, openCartDrawer, subscribeToCart } from "@/lib/cartStore";
 
 const NAV_SECTIONS = [
@@ -197,7 +197,7 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right Action Controls: User + Wishlist + Black Bag Pill */}
+        {/* Right Action Controls: Wishlist + Black Bag Pill */}
         <div className="flex items-center space-x-2 sm:space-x-3">
           <Link
             href="/wishlist"
@@ -210,15 +210,6 @@ export function Navbar() {
                 {wishlistCount}
               </span>
             )}
-          </Link>
-
-          <Link
-            href="/admin"
-            className="hidden sm:inline-flex p-2 text-[#191817]/75 hover:text-[#191817] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#191817] rounded-full cursor-pointer"
-            aria-label="Admin Studio"
-            title="Furnix Studio Admin"
-          >
-            <User className="w-4 h-4" strokeWidth={1.8} />
           </Link>
 
           <Link
@@ -290,16 +281,6 @@ export function Navbar() {
                 </span>
                 <span className="text-xs bg-[#EFEAE2] text-[#191817] px-2 py-0.5 rounded-full font-mono">
                   {mounted ? wishlistCount : 0}
-                </span>
-              </Link>
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="py-1 flex items-center justify-between text-[#191817] hover:text-black font-medium"
-              >
-                <span className="flex items-center space-x-2">
-                  <User className="w-4 h-4" />
-                  <span>Studio Admin</span>
                 </span>
               </Link>
             </div>
