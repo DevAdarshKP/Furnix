@@ -399,7 +399,7 @@ export function ProductDetailSection() {
 
                   <div className="pt-1 flex items-center space-x-6">
                     <Link
-                      href="#collections"
+                      href="/products/day-241-shack15-armchair"
                       className="inline-flex items-center space-x-3 px-8 py-4 bg-[#141210] hover:bg-black text-white rounded-full text-xs xl:text-sm font-semibold transition-all duration-200 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#141210]"
                     >
                       <span>Acquire Piece · $2,850</span>
@@ -1061,7 +1061,7 @@ export function ProductDetailSection() {
 
               <div className="pt-1">
                 <Link
-                  href="#collections"
+                  href="/products/day-241-shack15-armchair"
                   className="inline-flex items-center justify-center space-x-2 w-full py-4 bg-[#141210] text-white rounded-full text-xs font-semibold shadow-sm"
                 >
                   <span>Acquire Piece · $2,850</span>

@@ -41,14 +41,14 @@ export function HeroSection({ children }: HeroSectionProps) {
               {/* Pill Action Buttons */}
               <div className="flex items-center space-x-3">
                 <Link
-                  href="#collections"
+                  href="/products"
                   className="inline-flex items-center space-x-2 px-6 py-3.5 bg-[#1A1A1A] text-white rounded-full text-xs font-semibold hover:bg-black transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]"
                 >
                   <span>Shop the edit</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <Link
-                  href="#collections"
+                  href="/products"
                   className="px-6 py-3.5 border border-[#E0DCD3] rounded-full text-xs font-semibold text-[#191816] hover:bg-[#F2EFE9] transition-all duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#191816]"
                 >
                   Explore lighting
@@ -173,7 +173,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 
             <div className="flex items-center space-x-3">
               <Link
-                href="#collections"
+                href="/products"
                 className="text-xs font-semibold text-[#191816] hover:underline px-3 py-2 transition-colors"
               >
                 Details

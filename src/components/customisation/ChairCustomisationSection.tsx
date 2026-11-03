@@ -64,7 +64,7 @@ export function ChairCustomisationSection() {
 
             <div className="mt-7 sm:mt-9">
               <Link
-                href="#collections"
+                href="/products"
                 className="inline-flex items-center justify-center px-8 sm:px-9 py-3.5 sm:py-4 bg-white text-black hover:bg-neutral-50 rounded-full text-xs sm:text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-98"
               >
                 View all collections

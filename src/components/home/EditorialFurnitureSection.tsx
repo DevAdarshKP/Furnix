@@ -51,7 +51,7 @@ export function EditorialFurnitureSection() {
 
             <div>
               <Link
-                href="#collections"
+                href="/products"
                 className="inline-flex items-center space-x-2.5 px-6 py-3.5 bg-[#141210] hover:bg-black text-white rounded-full text-xs xl:text-sm font-semibold transition-all duration-200 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#141210]"
               >
                 <span>Explore Collection</span>
@@ -131,7 +131,7 @@ export function EditorialFurnitureSection() {
             </p>
             <div className="pt-2">
               <Link
-                href="#collections"
+                href="/products"
                 className="inline-flex items-center space-x-2 px-6 py-3.5 bg-[#141210] hover:bg-black text-white rounded-full text-xs sm:text-sm font-semibold transition-all shadow-sm"
               >
                 <span>Explore Collection</span>

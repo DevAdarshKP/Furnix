@@ -105,13 +105,13 @@ export function CartDrawer() {
                     Explore our curated collection and add signature furniture pieces.
                   </p>
                 </div>
-                <button
-                  type="button"
+                <Link
+                  href="/products"
                   onClick={closeCartDrawer}
-                  className="mt-2 px-6 py-2.5 rounded-full bg-[#141210] text-white text-xs font-semibold hover:bg-black transition-colors cursor-pointer"
+                  className="mt-2 inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#141210] text-white text-xs font-semibold hover:bg-black transition-colors cursor-pointer"
                 >
                   Explore Collection
-                </button>
+                </Link>
               </div>
             ) : (
               items.map((item) => (

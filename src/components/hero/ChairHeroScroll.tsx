@@ -225,7 +225,7 @@ export function ChairHeroScroll() {
               {/* Action Buttons & Collection CTA */}
               <div className="flex flex-wrap items-center gap-3.5 pt-2">
                 <Link
-                  href="#collections"
+                  href="/products"
                   className="inline-flex items-center space-x-2.5 px-8 py-4 bg-[#191817] text-white rounded-full text-xs xl:text-sm font-semibold tracking-wider hover:bg-black transition-all duration-200 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#191817]"
                 >
                   <span>EXPLORE THE COLLECTION</span>
@@ -233,7 +233,7 @@ export function ChairHeroScroll() {
                 </Link>
 
                 <Link
-                  href="#collections"
+                  href="/products"
                   className="px-7 py-4 bg-[#F7F4ED] hover:bg-white border border-[#DED7CD] rounded-full text-xs xl:text-sm font-medium text-[#191817] transition-all duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#191817]"
                 >
                   Explore lighting
