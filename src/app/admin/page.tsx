@@ -480,9 +480,9 @@ export default function AdminDashboardPage() {
 
   if (authChecking) {
     return (
-      <div className="min-h-screen bg-[#0D0C0B] flex items-center justify-center text-white font-sans">
-        <div className="flex items-center space-x-3 text-sm text-[#8E877C]">
-          <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+      <div className="min-h-screen bg-[#F7F4ED] flex items-center justify-center text-[#141210] font-sans">
+        <div className="flex items-center space-x-3 text-sm text-[#7A7367]">
+          <div className="w-4 h-4 rounded-full border-2 border-[#DDD6CA] border-t-[#141210] animate-spin" />
           <span>Verifying Admin Studio Access...</span>
         </div>
       </div>
@@ -490,27 +490,27 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0E0D0C] text-[#E8E4DD] font-sans selection:bg-[#FAF8F5] selection:text-black">
+    <div className="min-h-screen bg-[#F7F4ED] text-[#141210] font-sans selection:bg-[#141210] selection:text-white">
       {/* ── TOP NAV BAR ────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-[#121110]/95 backdrop-blur-md border-b border-[#242220] px-6 lg:px-12 py-4">
+      <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#E6DFD5] px-6 lg:px-12 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-7 h-7 rounded-full bg-[#FAF8F5] text-[#121110] flex items-center justify-center font-bold text-xs tracking-tight transition-transform group-hover:scale-105">
+              <div className="w-7 h-7 rounded-full bg-[#141210] text-[#FAF8F5] flex items-center justify-center font-bold text-xs tracking-tight transition-transform group-hover:scale-105">
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current">
                   <path d="M12 2L4 9v13h16V9l-8-7zm0 3.2L18 10v10H6V10l6-4.8z" />
                 </svg>
               </div>
-              <span className="font-sans text-base font-bold tracking-[0.08em] text-[#FAF8F5]">
+              <span className="font-sans text-base font-bold tracking-[0.08em] text-[#141210]">
                 FURNIX
               </span>
             </Link>
-            <span className="text-[#3E3B37]">/</span>
+            <span className="text-[#DDD6CA]">/</span>
             <div className="flex items-center space-x-2">
-              <span className="text-xs uppercase tracking-widest font-semibold text-[#8C8477]">
+              <span className="text-xs uppercase tracking-widest font-semibold text-[#7A7367]">
                 Archival Studio Admin
               </span>
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono tracking-wide bg-[#1A1917] border border-[#2B2926] text-[#A69E92]">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono tracking-wide bg-[#EFEAE2] border border-[#DDD6CA] text-[#5C564E]">
                 v2.6 Atlas
               </span>
             </div>
@@ -518,15 +518,15 @@ export default function AdminDashboardPage() {
 
           <div className="flex items-center space-x-3 sm:space-x-5">
             {/* Live Database status pill */}
-            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#171614] border border-[#262421] text-xs">
+            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white border border-[#E6DFD5] text-xs shadow-2xs">
               <div
                 className={`w-2 h-2 rounded-full ${
                   dbSource === "database"
-                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
-                    : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                    ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                    : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
                 }`}
               />
-              <span className="text-[11px] font-mono text-[#A69E92]">
+              <span className="text-[11px] font-mono text-[#5C564E]">
                 {dbSource === "database" ? "MongoDB Atlas Connected" : "Local Fallback Active"}
               </span>
             </div>
@@ -534,7 +534,7 @@ export default function AdminDashboardPage() {
             <Link
               href="/"
               target="_blank"
-              className="text-xs text-[#A69E92] hover:text-[#FAF8F5] transition-colors flex items-center space-x-1 py-1.5 px-3 border border-[#2B2926] hover:border-[#423E3A]"
+              className="text-xs text-[#5C564E] hover:text-[#141210] transition-colors flex items-center space-x-1 py-1.5 px-3 rounded-lg bg-white border border-[#DDD6CA] hover:border-[#141210] shadow-2xs"
             >
               <span>View Store</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -542,7 +542,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={handleLogout}
-              className="text-xs text-[#8E877C] hover:text-[#E57368] transition-colors flex items-center space-x-1.5 py-1.5 px-3 border border-[#2B2926] hover:border-[#5C231D] cursor-pointer"
+              className="text-xs text-[#7A7367] hover:text-rose-700 transition-colors flex items-center space-x-1.5 py-1.5 px-3 rounded-lg bg-white border border-[#DDD6CA] hover:border-rose-300 cursor-pointer shadow-2xs"
               title="Sign out of Admin Studio"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -557,14 +557,14 @@ export default function AdminDashboardPage() {
         
         {/* Top Notification Alerts */}
         {actionSuccess && (
-          <div className="p-3.5 bg-[#16231A] border border-[#284931] text-[#78D397] text-xs flex items-center justify-between transition-all">
+          <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center justify-between transition-all shadow-2xs">
             <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
               <span>{actionSuccess}</span>
             </div>
             <button
               onClick={() => setActionSuccess("")}
-              className="text-[#78D397]/70 hover:text-[#78D397] cursor-pointer"
+              className="text-emerald-700/70 hover:text-emerald-900 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -572,14 +572,14 @@ export default function AdminDashboardPage() {
         )}
 
         {actionError && (
-          <div className="p-3.5 bg-[#2A1614] border border-[#5C231D] text-[#E57368] text-xs flex items-center justify-between transition-all">
+          <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center justify-between transition-all shadow-2xs">
             <div className="flex items-center space-x-2">
-              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 text-rose-600" />
               <span>{actionError}</span>
             </div>
             <button
               onClick={() => setActionError("")}
-              className="text-[#E57368]/70 hover:text-[#E57368] cursor-pointer"
+              className="text-rose-700/70 hover:text-rose-900 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -588,40 +588,40 @@ export default function AdminDashboardPage() {
 
         {/* ── METRICS OVERVIEW CARDS ───────────────────────────── */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-5 bg-[#141312] border border-[#242220] space-y-2">
+          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
             <div className="flex items-center justify-between text-[#8C8477]">
               <span className="text-[10px] uppercase font-bold tracking-[0.16em]">Total Catalog</span>
-              <Layers className="w-4 h-4" />
+              <Layers className="w-4 h-4 text-[#8C8477]" />
             </div>
-            <div className="text-2xl sm:text-3xl font-serif text-[#FAF8F5]">{metrics.total}</div>
-            <div className="text-[11px] text-[#6E675D]">Items in active database</div>
+            <div className="text-2xl sm:text-3xl font-serif text-[#141210]">{metrics.total}</div>
+            <div className="text-[11px] text-[#8C8477]">Items in active database</div>
           </div>
 
-          <div className="p-5 bg-[#141312] border border-[#242220] space-y-2">
+          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
             <div className="flex items-center justify-between text-[#8C8477]">
               <span className="text-[10px] uppercase font-bold tracking-[0.16em]">In Stock</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500/80" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-2xl sm:text-3xl font-serif text-emerald-400">{metrics.inStockCount}</div>
-            <div className="text-[11px] text-[#6E675D]">Available for immediate order</div>
+            <div className="text-2xl sm:text-3xl font-serif text-emerald-700">{metrics.inStockCount}</div>
+            <div className="text-[11px] text-[#8C8477]">Available for immediate order</div>
           </div>
 
-          <div className="p-5 bg-[#141312] border border-[#242220] space-y-2">
+          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
             <div className="flex items-center justify-between text-[#8C8477]">
               <span className="text-[10px] uppercase font-bold tracking-[0.16em]">Out of Stock</span>
-              <XCircle className="w-4 h-4 text-[#A8483B]" />
+              <XCircle className="w-4 h-4 text-rose-500" />
             </div>
-            <div className="text-2xl sm:text-3xl font-serif text-[#E57368]">{metrics.outOfStockCount}</div>
-            <div className="text-[11px] text-[#6E675D]">Archival / Waitlist status</div>
+            <div className="text-2xl sm:text-3xl font-serif text-rose-700">{metrics.outOfStockCount}</div>
+            <div className="text-[11px] text-[#8C8477]">Archival / Waitlist status</div>
           </div>
 
-          <div className="p-5 bg-[#141312] border border-[#242220] space-y-2">
+          <div className="p-5 bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_12px_rgba(20,18,16,0.03)] space-y-2">
             <div className="flex items-center justify-between text-[#8C8477]">
               <span className="text-[10px] uppercase font-bold tracking-[0.16em]">3D Interactive</span>
-              <Box className="w-4 h-4 text-amber-500/80" />
+              <Box className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="text-2xl sm:text-3xl font-serif text-amber-300">{metrics.threeDCount}</div>
-            <div className="text-[11px] text-[#6E675D]">Three.js 360° viewport ready</div>
+            <div className="text-2xl sm:text-3xl font-serif text-[#BA4C35]">{metrics.threeDCount}</div>
+            <div className="text-[11px] text-[#8C8477]">Three.js 360° viewport ready</div>
           </div>
         </section>
 
@@ -632,18 +632,18 @@ export default function AdminDashboardPage() {
           <div className="flex flex-1 flex-wrap items-center gap-3">
             {/* Search Input */}
             <div className="relative flex-1 min-w-[240px]">
-              <Search className="w-4 h-4 text-[#6E675D] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#8C8477] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by title, SKU, or category..."
-                className="w-full bg-[#141312] border border-[#282623] text-xs text-[#FAF8F5] placeholder-[#6E675D] pl-9 pr-4 py-2.5 focus:outline-none focus:border-[#524E48] transition-colors"
+                className="w-full bg-white border border-[#DDD6CA] text-xs text-[#141210] placeholder-[#8C8477] pl-9 pr-4 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] transition-colors shadow-2xs"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6E675D] hover:text-[#FAF8F5]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8477] hover:text-[#141210]"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -654,7 +654,7 @@ export default function AdminDashboardPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-[#141312] border border-[#282623] text-xs text-[#FAF8F5] px-3 py-2.5 focus:outline-none focus:border-[#524E48] cursor-pointer"
+              className="bg-white border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] cursor-pointer shadow-2xs"
             >
               <option value="all">All Categories ({products.length})</option>
               {categories.map((cat) => (
@@ -668,7 +668,7 @@ export default function AdminDashboardPage() {
             <select
               value={stockFilter}
               onChange={(e) => setStockFilter(e.target.value)}
-              className="bg-[#141312] border border-[#282623] text-xs text-[#FAF8F5] px-3 py-2.5 focus:outline-none focus:border-[#524E48] cursor-pointer"
+              className="bg-white border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] cursor-pointer shadow-2xs"
             >
               <option value="all">Stock: All</option>
               <option value="inStock">In Stock Only</option>
@@ -682,7 +682,7 @@ export default function AdminDashboardPage() {
             <button
               onClick={handleSeedCatalog}
               disabled={seeding}
-              className="px-3.5 py-2.5 bg-[#171614] hover:bg-[#1F1D1B] border border-[#2E2B27] text-xs text-[#A69E92] hover:text-[#FAF8F5] transition-colors flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-2.5 bg-white hover:bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#5C564E] hover:text-[#141210] rounded-xl transition-colors flex items-center space-x-2 cursor-pointer disabled:opacity-50 shadow-2xs"
               title="Reset or re-seed default 6 Furnix products to MongoDB"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${seeding ? "animate-spin" : ""}`} />
@@ -693,7 +693,7 @@ export default function AdminDashboardPage() {
             <button
               onClick={fetchProducts}
               disabled={loading}
-              className="p-2.5 bg-[#171614] hover:bg-[#1F1D1B] border border-[#2E2B27] text-[#A69E92] hover:text-[#FAF8F5] transition-colors cursor-pointer disabled:opacity-50"
+              className="p-2.5 bg-white hover:bg-[#FAF8F5] border border-[#DDD6CA] text-[#5C564E] hover:text-[#141210] rounded-xl transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
               title="Refresh product list"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -702,7 +702,7 @@ export default function AdminDashboardPage() {
             {/* Add New Product Button */}
             <button
               onClick={handleOpenCreate}
-              className="px-4 py-2.5 bg-[#FAF8F5] hover:bg-white text-[#121110] text-xs font-bold uppercase tracking-wider transition-all flex items-center space-x-2 shadow-sm cursor-pointer active:scale-98"
+              className="px-4 py-2.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center space-x-2 shadow-sm cursor-pointer active:scale-98"
             >
               <Plus className="w-4 h-4" />
               <span>Add Product</span>
@@ -711,11 +711,11 @@ export default function AdminDashboardPage() {
         </section>
 
         {/* ── PRODUCTS TABLE ────────────────────────────────────── */}
-        <section className="bg-[#141312] border border-[#242220] overflow-hidden">
+        <section className="bg-white border border-[#E6DFD5] rounded-2xl shadow-[0_2px_16px_rgba(20,18,16,0.04)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[#242220] bg-[#171614] text-[#8C8477] text-[10px] uppercase font-bold tracking-[0.14em]">
+                <tr className="border-b border-[#E6DFD5] bg-[#FAF8F5] text-[#7A7367] text-[10px] uppercase font-bold tracking-[0.14em]">
                   <th className="py-3.5 px-4">Item</th>
                   <th className="py-3.5 px-4">SKU / ID</th>
                   <th className="py-3.5 px-4">Category</th>
@@ -726,21 +726,21 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-[#1F1D1B]">
+              <tbody className="divide-y divide-[#EFEAE2]">
                 {loading && products.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-[#8C8477]">
+                    <td colSpan={7} className="py-16 text-center text-[#7A7367]">
                       <div className="flex flex-col items-center justify-center space-y-3">
-                        <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                        <div className="w-5 h-5 rounded-full border-2 border-[#DDD6CA] border-t-[#141210] animate-spin" />
                         <span className="text-xs">Accessing MongoDB Atlas collection...</span>
                       </div>
                     </td>
                   </tr>
                 ) : filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-[#8C8477]">
-                      <p className="text-sm text-[#FAF8F5] font-serif">No products matched your criteria</p>
-                      <p className="text-xs mt-1 text-[#6E675D]">
+                    <td colSpan={7} className="py-16 text-center text-[#7A7367]">
+                      <p className="text-sm text-[#141210] font-serif">No products matched your criteria</p>
+                      <p className="text-xs mt-1 text-[#8C8477]">
                         Try refining your search query or reset the filters.
                       </p>
                     </td>
@@ -749,24 +749,24 @@ export default function AdminDashboardPage() {
                   filteredProducts.map((product) => (
                     <tr
                       key={product.id}
-                      className="hover:bg-[#1A1917] transition-colors group"
+                      className="hover:bg-[#FAF7F2] transition-colors group"
                     >
                       {/* Product Thumbnail & Title */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center space-x-3.5">
-                          <div className="w-12 h-12 bg-[#1C1A18] border border-[#2B2926] flex-shrink-0 flex items-center justify-center p-1 overflow-hidden">
+                          <div className="w-12 h-12 bg-[#EFEAE2] border border-[#DDD6CA] rounded-xl flex-shrink-0 flex items-center justify-center p-1 overflow-hidden">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={product.image || "/images/chair_thumb_yellow.png"}
                               alt={product.name}
-                              className="w-full h-full object-contain mix-blend-screen opacity-90 group-hover:scale-105 transition-transform"
+                              className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform"
                             />
                           </div>
                           <div className="min-w-0">
-                            <span className="font-serif text-sm text-[#FAF8F5] block truncate">
+                            <span className="font-serif text-sm text-[#141210] font-medium block truncate">
                               {product.name}
                             </span>
-                            <span className="text-[11px] text-[#6E675D] block truncate">
+                            <span className="text-[11px] text-[#7A7367] block truncate">
                               {product.subtitle || "Curated Edition"}
                             </span>
                           </div>
@@ -774,22 +774,22 @@ export default function AdminDashboardPage() {
                       </td>
 
                       {/* SKU / Slug */}
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-[#8C8477]">
-                        <span className="text-[#A69E92]">{product.sku || "FNX-001"}</span>
-                        <span className="block text-[10px] text-[#5A544C] truncate max-w-[140px]">
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-[#7A7367]">
+                        <span className="text-[#141210] font-medium">{product.sku || "FNX-001"}</span>
+                        <span className="block text-[10px] text-[#8C8477] truncate max-w-[140px]">
                           /{product.id}
                         </span>
                       </td>
 
                       {/* Category */}
-                      <td className="py-3.5 px-4 text-[#A69E92]">
-                        <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-[#1B1A18] border border-[#282623]">
+                      <td className="py-3.5 px-4 text-[#5C564E]">
+                        <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] bg-[#FAF8F5] border border-[#E6DFD5] text-[#5C564E]">
                           {product.category || "Living & Lounge"}
                         </span>
                       </td>
 
                       {/* Price */}
-                      <td className="py-3.5 px-4 font-mono font-medium text-[#FAF8F5]">
+                      <td className="py-3.5 px-4 font-mono font-medium text-[#141210]">
                         {product.price}
                       </td>
 
@@ -799,14 +799,14 @@ export default function AdminDashboardPage() {
                           onClick={() => handleToggleStock(product)}
                           className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all cursor-pointer ${
                             product.inStock
-                              ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 hover:bg-emerald-900/50"
-                              : "bg-[#2A1614] text-[#E57368] border border-[#5C231D] hover:bg-[#381B19]"
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
+                              : "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100"
                           }`}
                           title="Click to toggle stock availability"
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              product.inStock ? "bg-emerald-400" : "bg-[#E57368]"
+                              product.inStock ? "bg-emerald-600" : "bg-rose-600"
                             }`}
                           />
                           <span>{product.inStock ? "IN STOCK" : "OUT OF STOCK"}</span>
@@ -816,17 +816,17 @@ export default function AdminDashboardPage() {
                       {/* 3D Indicator */}
                       <td className="py-3.5 px-4 text-center">
                         {product.id === "day-241-shack15-armchair" ? (
-                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded text-[10px] font-mono bg-amber-950/60 border border-amber-600/50 text-amber-300 font-semibold shadow-2xs">
-                            <Lock className="w-3 h-3 text-amber-400" />
+                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono bg-amber-50 border border-amber-300 text-amber-900 font-semibold shadow-2xs">
+                            <Lock className="w-3 h-3 text-amber-700" />
                             <span>Default 3D</span>
                           </span>
                         ) : product.is3D ? (
-                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950/40 border border-amber-800/40 text-amber-300">
+                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-50/80 border border-amber-200 text-amber-800">
                             <Box className="w-3 h-3" />
                             <span>3D Mode</span>
                           </span>
                         ) : (
-                          <span className="text-[10px] text-[#5A544C] font-mono">2D Still</span>
+                          <span className="text-[10px] text-[#8C8477] font-mono">2D Still</span>
                         )}
                       </td>
 
@@ -837,7 +837,7 @@ export default function AdminDashboardPage() {
                           <Link
                             href={`/products/${product.id}`}
                             target="_blank"
-                            className="p-1.5 text-[#8C8477] hover:text-[#FAF8F5] hover:bg-[#23211F] rounded transition-colors"
+                            className="p-1.5 text-[#7A7367] hover:text-[#141210] hover:bg-[#FAF8F5] rounded-lg border border-transparent hover:border-[#DDD6CA] transition-colors"
                             title="View on storefront"
                           >
                             <Eye className="w-3.5 h-3.5" />
@@ -846,7 +846,7 @@ export default function AdminDashboardPage() {
                           {/* Edit button */}
                           <button
                             onClick={() => handleOpenEdit(product)}
-                            className="p-1.5 text-[#8C8477] hover:text-[#FAF8F5] hover:bg-[#23211F] rounded transition-colors cursor-pointer"
+                            className="p-1.5 text-[#7A7367] hover:text-[#141210] hover:bg-[#FAF8F5] rounded-lg border border-transparent hover:border-[#DDD6CA] transition-colors cursor-pointer"
                             title="Edit product specifications"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -856,7 +856,7 @@ export default function AdminDashboardPage() {
                           {product.id === "day-241-shack15-armchair" ? (
                             <button
                               disabled
-                              className="p-1.5 text-[#4A453E] cursor-not-allowed opacity-40 rounded"
+                              className="p-1.5 text-[#C4BCB0] cursor-not-allowed opacity-40 rounded-lg"
                               title="Default 3D showroom model is locked and cannot be deleted"
                             >
                               <Lock className="w-3.5 h-3.5" />
@@ -864,7 +864,7 @@ export default function AdminDashboardPage() {
                           ) : (
                             <button
                               onClick={() => setDeleteTarget(product)}
-                              className="p-1.5 text-[#8C8477] hover:text-[#E57368] hover:bg-[#2A1614] rounded transition-colors cursor-pointer"
+                              className="p-1.5 text-[#7A7367] hover:text-rose-700 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-200 transition-colors cursor-pointer"
                               title="Delete product"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -880,12 +880,12 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Table Footer info */}
-          <div className="p-4 border-t border-[#242220] bg-[#121110] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#6E675D] gap-2">
+          <div className="p-4 border-t border-[#E6DFD5] bg-[#FAF8F5] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#7A7367] gap-2">
             <span>
               Showing {filteredProducts.length} of {products.length} registered products
             </span>
-            <div className="flex items-center space-x-1 font-mono text-[10px]">
-              <Database className="w-3 h-3 text-emerald-500" />
+            <div className="flex items-center space-x-1 font-mono text-[10px] text-[#5C564E]">
+              <Database className="w-3 h-3 text-emerald-600" />
               <span>MongoDB Atlas: collection.furnix.products</span>
             </div>
           </div>
@@ -894,22 +894,22 @@ export default function AdminDashboardPage() {
 
       {/* ── CREATE / EDIT PRODUCT MODAL ───────────────────────── */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#141312] border border-[#2B2926] shadow-2xl relative my-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-[#141210]/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white border border-[#E6DFD5] shadow-2xl rounded-2xl relative my-8 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
             
             {/* Modal Header */}
-            <div className="p-6 border-b border-[#242220] flex items-center justify-between">
+            <div className="p-6 border-b border-[#E6DFD5] bg-[#FAF8F5] flex items-center justify-between">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#8C8477] block">
                   {editingProduct ? "ARCHIVAL UPDATE" : "NEW ARCHIVAL RECORD"}
                 </span>
-                <h2 className="text-xl font-serif text-[#FAF8F5]">
+                <h2 className="text-xl font-serif text-[#141210]">
                   {editingProduct ? `Edit “${editingProduct.name}”` : "Create New Catalog Product"}
                 </h2>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 text-[#8C8477] hover:text-[#FAF8F5] transition-colors cursor-pointer"
+                className="p-2 text-[#7A7367] hover:text-[#141210] transition-colors cursor-pointer rounded-lg hover:bg-[#EFEAE2]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -920,7 +920,7 @@ export default function AdminDashboardPage() {
               {/* Product Title & Subtitle */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Product Title *
                   </label>
                   <input
@@ -929,12 +929,12 @@ export default function AdminDashboardPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Day 241 Shack15 Armchair"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3.5 py-2.5 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Subtitle / Edition
                   </label>
                   <input
@@ -942,7 +942,7 @@ export default function AdminDashboardPage() {
                     value={formData.subtitle}
                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                     placeholder="e.g. Calm Scandinavian Lounge"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3.5 py-2.5 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
               </div>
@@ -950,7 +950,7 @@ export default function AdminDashboardPage() {
               {/* Price, SKU & Category */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Price (USD) *
                   </label>
                   <input
@@ -959,12 +959,12 @@ export default function AdminDashboardPage() {
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     placeholder="$1,420.00"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs font-mono text-[#FAF8F5] px-3.5 py-2.5 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs font-mono text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     SKU Code
                   </label>
                   <input
@@ -972,18 +972,18 @@ export default function AdminDashboardPage() {
                     value={formData.sku}
                     onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                     placeholder="FNX-ARCHIVE-01"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs font-mono text-[#FAF8F5] px-3.5 py-2.5 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs font-mono text-[#141210] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Category
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3 py-2.5 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3 py-2.5 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors cursor-pointer"
                   >
                     <option value="Living & Lounge">Living & Lounge</option>
                     <option value="Armchairs">Armchairs</option>
@@ -997,13 +997,13 @@ export default function AdminDashboardPage() {
               {/* Manual Device Image Chooser & Preview */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Product Image (Choose From Device) *
                   </label>
                   <button
                     type="button"
                     onClick={() => setShowUrlInput(!showUrlInput)}
-                    className="text-[10px] text-[#A69E92] hover:text-[#FAF8F5] underline cursor-pointer"
+                    className="text-[10px] text-[#7A7367] hover:text-[#141210] underline cursor-pointer"
                   >
                     {showUrlInput ? "Hide manual URL" : "Or enter URL / pick preset"}
                   </button>
@@ -1026,32 +1026,32 @@ export default function AdminDashboardPage() {
                   }}
                   onDragLeave={() => setIsDragging(false)}
                   onDrop={handleDrop}
-                  className={`border-2 border-dashed p-4 transition-all duration-200 rounded-lg flex flex-col sm:flex-row items-center gap-4 ${
+                  className={`border-2 border-dashed p-4 transition-all duration-200 rounded-xl flex flex-col sm:flex-row items-center gap-4 ${
                     isDragging
-                      ? "border-[#FAF8F5] bg-[#23211F]"
-                      : "border-[#2E2B27] bg-[#161514] hover:border-[#4A453E]"
+                      ? "border-[#141210] bg-[#FAF8F5]"
+                      : "border-[#DDD6CA] bg-[#FAF8F5] hover:border-[#141210]"
                   }`}
                 >
                   {/* Image Preview or Placeholder */}
-                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-[#1F1D1B] border border-[#2E2B27] rounded-md flex items-center justify-center p-2 flex-shrink-0 overflow-hidden">
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-[#EFEAE2] border border-[#DDD6CA] rounded-xl flex items-center justify-center p-2 flex-shrink-0 overflow-hidden">
                     {formData.image ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={formData.image}
                           alt="Selected product preview"
-                          className="w-full h-full object-contain mix-blend-screen"
+                          className="w-full h-full object-contain mix-blend-multiply"
                         />
                         {isUploading && (
-                          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                            <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                          <div className="absolute inset-0 bg-[#141210]/60 backdrop-blur-xs flex items-center justify-center">
+                            <div className="w-5 h-5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
                           </div>
                         )}
                       </>
                     ) : (
-                      <div className="flex flex-col items-center justify-center text-[#5A544C] space-y-1">
+                      <div className="flex flex-col items-center justify-center text-[#8C8477] space-y-1">
                         <ImageIcon className="w-7 h-7" />
-                        <span className="text-[9px] uppercase tracking-wider">No Image</span>
+                        <span className="text-[9px] uppercase tracking-wider font-semibold">No Image</span>
                       </div>
                     )}
                   </div>
@@ -1059,10 +1059,10 @@ export default function AdminDashboardPage() {
                   {/* Actions & Instructions */}
                   <div className="flex-1 text-center sm:text-left space-y-2 w-full">
                     <div>
-                      <span className="text-xs font-medium text-[#FAF8F5] block">
+                      <span className="text-xs font-medium text-[#141210] block">
                         {formData.image ? "Image Ready for Archive" : "Select an image from your device"}
                       </span>
-                      <span className="text-[11px] text-[#8C8477] block mt-0.5">
+                      <span className="text-[11px] text-[#7A7367] block mt-0.5">
                         PNG, JPG, WEBP, or SVG. Drag & drop here or click below.
                       </span>
                     </div>
@@ -1072,7 +1072,7 @@ export default function AdminDashboardPage() {
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#FAF8F5] hover:bg-white text-[#141210] rounded text-xs font-semibold transition-colors cursor-pointer shadow-xs active:scale-95 disabled:opacity-50"
+                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs active:scale-95 disabled:opacity-50"
                       >
                         <UploadCloud className="w-3.5 h-3.5" />
                         <span>{formData.image ? "Choose Different Image" : "Choose Image From Device"}</span>
@@ -1082,7 +1082,7 @@ export default function AdminDashboardPage() {
                         <button
                           type="button"
                           onClick={() => setFormData({ ...formData, image: "" })}
-                          className="px-2.5 py-1.5 bg-[#242220] hover:bg-[#312E2A] text-[#8C8477] hover:text-[#FAF8F5] rounded text-xs transition-colors cursor-pointer"
+                          className="px-2.5 py-1.5 bg-[#EFEAE2] hover:bg-[#DDD6CA] text-[#5C564E] hover:text-[#141210] rounded-lg text-xs transition-colors cursor-pointer font-medium"
                         >
                           Clear
                         </button>
@@ -1090,8 +1090,8 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {uploadProgress && (
-                      <div className="text-[10px] text-amber-400 font-mono flex items-center gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full border border-amber-400/30 border-t-amber-400 animate-spin" />
+                      <div className="text-[10px] text-amber-700 font-mono flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full border border-amber-600/30 border-t-amber-600 animate-spin" />
                         <span>{uploadProgress}</span>
                       </div>
                     )}
@@ -1100,8 +1100,8 @@ export default function AdminDashboardPage() {
 
                 {/* Optional Manual URL & Presets accordion */}
                 {showUrlInput && (
-                  <div className="p-3 bg-[#171614] border border-[#282623] rounded space-y-2.5 mt-2 animate-in fade-in duration-150">
-                    <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <div className="p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] rounded-xl space-y-2.5 mt-2 animate-in fade-in duration-150">
+                    <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                       Direct Image URL or Path
                     </label>
                     <input
@@ -1109,21 +1109,21 @@ export default function AdminDashboardPage() {
                       value={formData.image}
                       onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                       placeholder="/images/chair_thumb_yellow.png or https://..."
-                      className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs font-mono text-[#FAF8F5] px-3.5 py-2 focus:outline-none focus:border-[#FAF8F5]"
+                      className="w-full bg-white border border-[#DDD6CA] text-xs font-mono text-[#141210] px-3.5 py-2 rounded-lg focus:outline-none focus:border-[#141210]"
                     />
 
                     {/* Presets */}
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="text-[10px] text-[#6E675D]">Presets:</span>
+                      <span className="text-[10px] text-[#7A7367] font-medium">Presets:</span>
                       {SAMPLE_PRESET_IMAGES.map((preset) => (
                         <button
                           type="button"
                           key={preset.url}
                           onClick={() => setFormData({ ...formData, image: preset.url })}
-                          className={`text-[10px] px-2 py-0.5 border rounded cursor-pointer transition-colors ${
+                          className={`text-[10px] px-2.5 py-1 border rounded-lg cursor-pointer transition-colors ${
                             formData.image === preset.url
-                              ? "bg-[#2E2B27] border-[#FAF8F5] text-[#FAF8F5]"
-                              : "bg-[#181715] border-[#2B2926] text-[#8C8477] hover:text-[#FAF8F5]"
+                              ? "bg-[#141210] border-[#141210] text-[#FAF8F5]"
+                              : "bg-white border-[#DDD6CA] text-[#5C564E] hover:text-[#141210] hover:border-[#141210]"
                           }`}
                         >
                           {preset.label}
@@ -1135,9 +1135,9 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Specs: Material, Origin, Dimensions, Designer */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#242220]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#E6DFD5]">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Material & Finish
                   </label>
                   <input
@@ -1145,12 +1145,12 @@ export default function AdminDashboardPage() {
                     value={formData.material}
                     onChange={(e) => setFormData({ ...formData, material: e.target.value })}
                     placeholder="e.g. Solid European Oak & Bouclé"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3.5 py-2 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Dimensions
                   </label>
                   <input
@@ -1158,12 +1158,12 @@ export default function AdminDashboardPage() {
                     value={formData.dimensions}
                     onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
                     placeholder="e.g. 84 W × 88 D × 78 H cm"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3.5 py-2 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Origin / Workshop
                   </label>
                   <input
@@ -1171,12 +1171,12 @@ export default function AdminDashboardPage() {
                     value={formData.origin}
                     onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
                     placeholder="e.g. Copenhagen, Denmark"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3.5 py-2 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                  <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                     Lead Designer
                   </label>
                   <input
@@ -1184,14 +1184,14 @@ export default function AdminDashboardPage() {
                     value={formData.designer}
                     onChange={(e) => setFormData({ ...formData, designer: e.target.value })}
                     placeholder="e.g. Studio Furnix"
-                    className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] px-3.5 py-2 focus:outline-none focus:border-[#FAF8F5]"
+                    className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] px-3.5 py-2 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors"
                   />
                 </div>
               </div>
 
               {/* Story / Design Philosophy */}
               <div className="space-y-1.5">
-                <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#8C8477]">
+                <label className="block text-[10px] uppercase tracking-wider font-semibold text-[#7A7367]">
                   Design Philosophy & Story
                 </label>
                 <textarea
@@ -1199,24 +1199,24 @@ export default function AdminDashboardPage() {
                   value={formData.storyContent}
                   onChange={(e) => setFormData({ ...formData, storyContent: e.target.value })}
                   placeholder="Describe the craftsmanship, tactile materials, and heritage..."
-                  className="w-full bg-[#1A1917] border border-[#2E2B27] text-xs text-[#FAF8F5] p-3 focus:outline-none focus:border-[#FAF8F5] resize-none"
+                  className="w-full bg-[#FAF8F5] border border-[#DDD6CA] text-xs text-[#141210] p-3 rounded-xl focus:outline-none focus:border-[#141210] focus:bg-white transition-colors resize-none"
                 />
               </div>
 
               {/* Availability & Stock Status */}
-              <div className="pt-2 border-t border-[#242220]">
-                <label className="flex items-center space-x-3 p-3.5 bg-[#171614] border border-[#282623] cursor-pointer hover:border-[#383531] rounded transition-colors">
+              <div className="pt-2 border-t border-[#E6DFD5]">
+                <label className="flex items-center space-x-3 p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] cursor-pointer hover:border-[#141210] rounded-xl transition-colors">
                   <input
                     type="checkbox"
                     checked={formData.inStock}
                     onChange={(e) => setFormData({ ...formData, inStock: e.target.checked })}
-                    className="w-4 h-4 accent-[#FAF8F5] cursor-pointer"
+                    className="w-4 h-4 accent-[#141210] cursor-pointer"
                   />
                   <div>
-                    <span className="text-xs font-semibold text-[#FAF8F5] block">
+                    <span className="text-xs font-semibold text-[#141210] block">
                       In Stock for Immediate Delivery
                     </span>
-                    <span className="text-[10px] text-[#8C8477] block mt-0.5">
+                    <span className="text-[10px] text-[#7A7367] block mt-0.5">
                       When enabled, users can purchase immediately. When unchecked, product displays as Archival Waitlist on the storefront.
                     </span>
                   </div>
@@ -1224,22 +1224,22 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Form Action Buttons */}
-              <div className="pt-4 border-t border-[#242220] flex items-center justify-end space-x-3">
+              <div className="pt-4 border-t border-[#E6DFD5] flex items-center justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 text-xs text-[#8C8477] hover:text-[#FAF8F5] transition-colors cursor-pointer"
+                  className="px-4 py-2.5 text-xs text-[#7A7367] hover:text-[#141210] transition-colors cursor-pointer font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 bg-[#FAF8F5] hover:bg-white text-[#121110] text-xs font-bold uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2"
+                  className="px-6 py-2.5 bg-[#141210] hover:bg-black text-[#FAF8F5] hover:text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2 shadow-sm active:scale-98"
                 >
                   {submitting ? (
                     <>
-                      <div className="w-3.5 h-3.5 rounded-full border-2 border-black/20 border-t-black animate-spin" />
+                      <div className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                       <span>SAVING TO ATLAS...</span>
                     </>
                   ) : (
@@ -1254,25 +1254,25 @@ export default function AdminDashboardPage() {
 
       {/* ── DELETE CONFIRMATION DIALOG ────────────────────────── */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-[#141312] border border-[#5C231D] p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-start space-x-3">
-              <div className="w-9 h-9 rounded-full bg-[#2A1614] border border-[#5C231D] flex items-center justify-center flex-shrink-0 text-[#E57368]">
+        <div className="fixed inset-0 z-50 bg-[#141210]/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white border border-rose-200 p-6 shadow-2xl rounded-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start space-x-3.5">
+              <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center flex-shrink-0 text-rose-600">
                 <Trash2 className="w-4 h-4" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-serif text-lg text-[#FAF8F5]">Confirm Product Deletion</h3>
-                <p className="text-xs text-[#8C8477] leading-relaxed">
+                <h3 className="font-serif text-lg text-[#141210]">Confirm Product Deletion</h3>
+                <p className="text-xs text-[#7A7367] leading-relaxed">
                   Are you sure you want to permanently delete{" "}
-                  <strong className="text-[#FAF8F5]">“{deleteTarget.name}”</strong> (SKU:{" "}
+                  <strong className="text-[#141210]">“{deleteTarget.name}”</strong> (SKU:{" "}
                   {deleteTarget.sku}) from the MongoDB Atlas database?
                 </p>
               </div>
             </div>
 
-            <div className="p-3 bg-[#1A1817] border border-[#2E2B27] text-[11px] text-[#A69E92]">
+            <div className="p-3.5 bg-[#FAF8F5] border border-[#E6DFD5] rounded-xl text-[11px] text-[#5C564E]">
               You can restore the default catalog at any time using the{" "}
-              <strong className="text-[#FAF8F5]">“Re-Seed Archive”</strong> button.
+              <strong className="text-[#141210]">“Re-Seed Archive”</strong> button.
             </div>
 
             <div className="flex items-center justify-end space-x-3 pt-2">
@@ -1280,7 +1280,7 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleting}
-                className="px-4 py-2 text-xs text-[#8C8477] hover:text-[#FAF8F5] transition-colors cursor-pointer"
+                className="px-4 py-2 text-xs text-[#7A7367] hover:text-[#141210] transition-colors cursor-pointer font-medium"
               >
                 Cancel
               </button>
@@ -1288,11 +1288,11 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={handleDeleteConfirm}
                 disabled={deleting}
-                className="px-5 py-2 bg-[#E57368] hover:bg-[#F28B82] text-black text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2"
+                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-2 shadow-sm active:scale-98"
               >
                 {deleting ? (
                   <>
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-black/20 border-t-black animate-spin" />
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                     <span>DELETING...</span>
                   </>
                 ) : (
@@ -1305,10 +1305,10 @@ export default function AdminDashboardPage() {
       )}
 
       {/* ── FOOTER ────────────────────────────────────────────── */}
-      <footer className="mt-16 border-t border-[#242220] py-6 px-6 lg:px-12 text-center text-xs text-[#6E675D]">
+      <footer className="mt-16 border-t border-[#E6DFD5] bg-[#FAF8F5] py-6 px-6 lg:px-12 text-center text-xs text-[#7A7367]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>FURNIX ARCHIVAL STUDIO CMS · Studio Operations</span>
-          <span className="font-mono text-[11px]">Logged in as: {userEmail}</span>
+          <span className="font-mono text-[11px] text-[#8C8477]">Logged in as: {userEmail}</span>
         </div>
       </footer>
     </div>
