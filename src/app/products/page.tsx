@@ -18,14 +18,6 @@ import {
 } from "@/lib/cartStore";
 import { ProductDetail } from "@/lib/products";
 
-// The 4 chairs featured on the home page (which must be excluded from this collection page)
-const HOMEPAGE_FEATURED_IDS = new Set([
-  "day-241-shack15-armchair",
-  "cyan-armchair",
-  "modular-sofa",
-  "bergere-wingback",
-]);
-
 // Soft luxury pastel tinted backgrounds matching the aesthetic in the design reference
 const PASTEL_TINTS = [
   "bg-[#E3EBE3]", // Soft Sage Green
@@ -36,16 +28,24 @@ const PASTEL_TINTS = [
 
 // Product badges for known pieces (with dynamic fallbacks for new database items)
 const BADGE_MAP: Record<string, string> = {
-  "green-arm-chair": "Bestseller",
+  "day-241-shack15-armchair": "Signature 3D",
+  "cyan-armchair": "Curated",
+  "modular-sofa": "Plush Bouclé",
+  "bergere-wingback": "Heritage",
   "dauphine-armchair": "Archival",
   "koto-lounge": "Low stock",
+  "green-arm-chair": "Bestseller",
 };
 
 // Ratings map for authentic catalog presentation (with dynamic fallbacks for new database items)
 const RATINGS_MAP: Record<string, { stars: number; count: number }> = {
-  "green-arm-chair": { stars: 4.9, count: 312 },
+  "day-241-shack15-armchair": { stars: 5.0, count: 428 },
+  "cyan-armchair": { stars: 4.8, count: 184 },
+  "modular-sofa": { stars: 4.9, count: 215 },
+  "bergere-wingback": { stars: 4.9, count: 162 },
   "dauphine-armchair": { stars: 4.9, count: 96 },
   "koto-lounge": { stars: 5.0, count: 64 },
+  "green-arm-chair": { stars: 4.9, count: 312 },
 };
 
 export default function CompleteCollectionPage() {
@@ -112,27 +112,22 @@ export default function CompleteCollectionPage() {
     };
   }, [products.length]);
 
-  // Filter out products shown on the homepage
-  const otherProducts = useMemo(() => {
-    return products.filter((p) => !HOMEPAGE_FEATURED_IDS.has(p.id));
-  }, [products]);
-
   // Extract unique categories for filter tabs dynamically from live database items
   const categories = useMemo(() => {
     const set = new Set<string>();
-    otherProducts.forEach((p) => {
+    products.forEach((p) => {
       if (p.category) set.add(p.category);
     });
     return ["All", ...Array.from(set)];
-  }, [otherProducts]);
+  }, [products]);
 
-  // Apply selected category filter
+  // Apply selected category filter across all database products
   const displayedProducts = useMemo(() => {
-    if (selectedCategory === "All") return otherProducts;
-    return otherProducts.filter(
+    if (selectedCategory === "All") return products;
+    return products.filter(
       (p) => p.category?.toLowerCase() === selectedCategory.toLowerCase()
     );
-  }, [otherProducts, selectedCategory]);
+  }, [products, selectedCategory]);
 
   const handleAddToCart = (e: React.MouseEvent, product: ProductDetail) => {
     e.preventDefault();
