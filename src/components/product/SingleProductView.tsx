@@ -523,7 +523,7 @@ export function SingleProductView({ product }: SingleProductViewProps) {
                       fill
                       unoptimized
                       sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 280px"
-                      className="object-contain pointer-events-none select-none mix-blend-multiply"
+                      className="object-contain pointer-events-none select-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.10)]"
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;
                         const fallback = cleanImageUrl("", rel.id);

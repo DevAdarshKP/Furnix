@@ -114,7 +114,7 @@ export function ProductCard({
                 fill
                 unoptimized
                 sizes="(max-width: 640px) 280px, (max-width: 1024px) 320px, 360px"
-                className="object-contain pointer-events-none mix-blend-multiply select-none"
+                className="object-contain pointer-events-none drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)] select-none"
                 priority
                 loading="eager"
                 draggable={false}

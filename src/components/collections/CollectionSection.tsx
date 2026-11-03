@@ -12,7 +12,7 @@ const COLLECTION_ITEMS: CollectionItem[] = [
     category: "Living & Lounge",
     price: "$2,850",
     priceNum: 2850,
-    image: "/images/chair_thumb_yellow.png",
+    image: "/images/bolle_lounge_chair.png",
     isFeatured: true,
     material: "Solid European Oak with hand-tufted saffron wool bouclé",
     dimensions: "84 W × 88 D × 78 H cm (Seat 42 cm)",
@@ -98,7 +98,7 @@ function mapToCollectionItem(p: any): CollectionItem {
       typeof p.priceNum === "number"
         ? p.priceNum
         : parseFloat(String(p.price).replace(/[^0-9.]/g, "")) || 0,
-    image: p.image || "/images/chair_thumb_yellow.png",
+    image: p.image || "/images/bolle_lounge_chair.png",
     isFeatured: isDefault3D,
     is3D: isDefault3D,
     material: p.quickSpecs?.material || p.material || "",

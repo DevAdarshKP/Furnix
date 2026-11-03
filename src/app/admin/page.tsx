@@ -949,7 +949,7 @@ export default function AdminDashboardPage() {
                               <img
                                 src={product.image || "/images/chair_thumb_yellow.png"}
                                 alt={product.name}
-                                className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform"
+                                className="w-full h-full object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.08)] group-hover:scale-105 transition-transform"
                               />
                             </div>
                             <div className="min-w-0">
@@ -1224,7 +1224,7 @@ export default function AdminDashboardPage() {
                         <img
                           src={formData.image}
                           alt="Selected product preview"
-                          className="w-full h-full object-contain mix-blend-multiply"
+                          className="w-full h-full object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.08)]"
                         />
                         {isUploading && (
                           <div className="absolute inset-0 bg-[#141210]/60 backdrop-blur-xs flex items-center justify-center">

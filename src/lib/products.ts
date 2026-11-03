@@ -47,7 +47,7 @@ export const PRODUCTS_CATALOG: ProductDetail[] = [
     inStock: true,
     price: "$2,850.00",
     priceNum: 2850,
-    image: "/images/chair_thumb_yellow.png",
+    image: "/images/bolle_lounge_chair.png",
     is3D: true,
     modelUrl: "/models/arm_chair__furniture.glb",
     quickSpecs: {
@@ -312,7 +312,7 @@ export const PRODUCTS_CATALOG: ProductDetail[] = [
     inStock: true,
     price: "$1,250.00",
     priceNum: 1250,
-    image: "/images/atelier_green_armchair.jpg",
+    image: "/images/green_armchair.png",
     is3D: false,
     quickSpecs: {
       designer: "Studio Furnix",

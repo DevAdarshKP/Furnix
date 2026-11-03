@@ -82,28 +82,44 @@ function saveToStorage() {
 
 // Known product image fallbacks ensuring no broken thumbnails
 export const KNOWN_PRODUCT_IMAGES: Record<string, string> = {
-  "day-241-shack15-armchair": "/images/chair_thumb_yellow.png",
+  "day-241-shack15-armchair": "/images/bolle_lounge_chair.png",
   "cyan-armchair": "/images/cyan_chair.png",
   "modular-sofa": "/images/modular_blue_sofa.png",
   "bergere-wingback": "/images/wingback_chair.png",
   "dauphine-armchair": "/images/wood_armchair.png",
   "koto-lounge": "/images/midcentury_sofa.png",
-  "green-arm-chair": "/images/atelier_green_armchair.jpg",
+  "green-arm-chair": "/images/green_armchair.png",
 };
 
 export function cleanImageUrl(url?: string, itemId?: string): string {
+  if (itemId && KNOWN_PRODUCT_IMAGES[itemId]) {
+    if (
+      !url ||
+      typeof url !== "string" ||
+      !url.trim() ||
+      url === "undefined" ||
+      url === "null" ||
+      url.includes("green_accent_chair") ||
+      url.includes("atelier_green_armchair")
+    ) {
+      return KNOWN_PRODUCT_IMAGES[itemId];
+    }
+  }
   if (!url || typeof url !== "string" || !url.trim() || url === "undefined" || url === "null") {
     if (itemId && KNOWN_PRODUCT_IMAGES[itemId]) {
       return KNOWN_PRODUCT_IMAGES[itemId];
     }
-    return "/images/chair_thumb_yellow.png";
+    return "/images/bolle_lounge_chair.png";
   }
   const cleaned = url.trim().replace(/^https?:\/\/localhost:\d+/i, "");
   if (!cleaned || cleaned === "/" || cleaned.includes("undefined")) {
     if (itemId && KNOWN_PRODUCT_IMAGES[itemId]) {
       return KNOWN_PRODUCT_IMAGES[itemId];
     }
-    return "/images/chair_thumb_yellow.png";
+    return "/images/bolle_lounge_chair.png";
+  }
+  if (itemId && KNOWN_PRODUCT_IMAGES[itemId] && (cleaned.includes("green_accent_chair") || cleaned.includes("atelier_green_armchair"))) {
+    return KNOWN_PRODUCT_IMAGES[itemId];
   }
   return cleaned;
 }
