@@ -506,7 +506,7 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     const atelierScreenY = atelierRect ? atelierRect.top + atelierRect.height * 0.52 : vh * 0.50;
 
     const collScreenX = collRect ? collRect.left + collRect.width * 0.50 : originScreenX;
-    const collScreenY = collRect ? collRect.top + collRect.height * 0.44 : vh * 0.50;
+    const collScreenY = collRect ? collRect.top + collRect.height * 0.50 : vh * 0.50;
 
     const customScreenX = customRect ? customRect.left + customRect.width * 0.50 : vw * 0.50;
     const customScreenY = customRect ? customRect.top + customRect.height * 0.48 : vh * 0.50;

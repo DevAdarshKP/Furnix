@@ -66,7 +66,7 @@ export function ProductCard({
       onMouseEnter={() => onHover?.(item.id)}
       onMouseLeave={() => onHover?.(null)}
       id={isFeatured ? "featured-chair-target" : undefined}
-      className={`group flex flex-col flex-shrink-0 cursor-pointer focus:outline-none transition-all duration-300 ease-out select-none scale-100 z-10 w-[280px] sm:w-[320px] lg:w-[calc((100vw-208px)/4)] max-w-[360px] ${className}`}
+      className={`group flex flex-col w-full cursor-pointer focus:outline-none transition-all duration-300 ease-out select-none scale-100 z-10 ${className}`}
       role="article"
       aria-label={`${item.name} - ${item.price}`}
     >
@@ -102,7 +102,11 @@ export function ProductCard({
           className="relative w-full h-full p-4 sm:p-5 flex items-center justify-center"
         >
           {item.image ? (
-            <div className="relative w-full h-full flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+            <div
+              className={`relative w-full h-full flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105 ${
+                isFeatured ? "opacity-0" : ""
+              }`}
+            >
               <Image
                 src={item.image}
                 alt={item.name}
@@ -125,11 +129,11 @@ export function ProductCard({
       {/* Product Information Row with Title, Price, Bag Button, and Shop Now - Permanently visible */}
       <div className="mt-3 sm:mt-4 flex items-center justify-between gap-2 px-1 relative z-20 min-h-[48px]">
         <div className="min-w-0 flex-1">
-          <h3 className="font-sans font-bold text-base sm:text-lg text-white tracking-tight truncate">
+          <h3 className="font-sans font-bold text-sm sm:text-base lg:text-base xl:text-lg text-white tracking-tight truncate">
             {item.name}
           </h3>
           <div className="flex items-center space-x-2 mt-0.5">
-            <p className="font-sans font-medium text-sm sm:text-base text-white/75">
+            <p className="font-sans font-medium text-xs sm:text-sm xl:text-base text-white/75">
               {item.price}
             </p>
             {item.inStock === false && (
@@ -141,30 +145,30 @@ export function ProductCard({
         </div>
 
         {/* Action Buttons: Add to Cart Bag Button + Shop Now Pill */}
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           <button
             type="button"
             onClick={handleAddToCart}
             aria-label={`Add ${item.name} to cart`}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 cursor-pointer active:scale-95 ${
+            className={`w-8 h-8 sm:w-9 sm:h-9 xl:w-10 xl:h-10 rounded-full flex items-center justify-center border transition-all duration-200 cursor-pointer active:scale-95 ${
               addedAnim
                 ? "bg-[#34C759] border-[#34C759] text-white"
                 : "border-white/30 text-white hover:border-white hover:bg-white/10"
             }`}
           >
             {addedAnim ? (
-              <Check className="w-4 h-4" />
+              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
-              <ShoppingBag className="w-4 h-4" />
+              <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </button>
           <Link
             href={`/products/${item.id}`}
             aria-label={`View ${item.name} details`}
-            className="inline-flex items-center space-x-1 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-white/40 text-xs font-semibold text-white hover:bg-white hover:text-black transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
+            className="inline-flex items-center space-x-1 px-2.5 sm:px-3 xl:px-3.5 py-1.5 sm:py-2 rounded-full border border-white/40 text-[11px] sm:text-xs font-semibold text-white hover:bg-white hover:text-black transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
           >
             <span>Shop</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </Link>
         </div>
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { ProductCard, CollectionItem } from "./ProductCard";
 
 const COLLECTION_ITEMS: CollectionItem[] = [
@@ -109,7 +109,6 @@ function mapToCollectionItem(p: any): CollectionItem {
 }
 
 export function CollectionSection() {
-  const galleryRef = useRef<HTMLDivElement | null>(null);
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
   const [items, setItems] = useState<CollectionItem[]>(COLLECTION_ITEMS);
 
@@ -156,56 +155,8 @@ export function CollectionSection() {
     };
   }, []);
 
-  // Mouse drag-to-slide refs
-  const isDownRef = useRef(false);
-  const startXRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const hasMovedRef = useRef(false);
-
-  // Mouse Drag Handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!galleryRef.current) return;
-    isDownRef.current = true;
-    hasMovedRef.current = false;
-    startXRef.current = e.pageX - galleryRef.current.offsetLeft;
-    scrollLeftRef.current = galleryRef.current.scrollLeft;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDownRef.current || !galleryRef.current) return;
-    const x = e.pageX - galleryRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.3;
-    if (Math.abs(walk) > 5) {
-      hasMovedRef.current = true;
-    }
-    galleryRef.current.scrollLeft = scrollLeftRef.current - walk;
-  };
-
-  const handleMouseUp = () => {
-    isDownRef.current = false;
-  };
-
-  const handleClickCapture = (e: React.MouseEvent) => {
-    if (hasMovedRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      hasMovedRef.current = false;
-    }
-  };
-
-  const scrollPrev = () => {
-    if (!galleryRef.current) return;
-    const card = galleryRef.current.querySelector(".collection-card-item") as HTMLElement;
-    const scrollAmount = card ? card.offsetWidth + 32 : 360;
-    galleryRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-  };
-
-  const scrollNext = () => {
-    if (!galleryRef.current) return;
-    const card = galleryRef.current.querySelector(".collection-card-item") as HTMLElement;
-    const scrollAmount = card ? card.offsetWidth + 32 : 360;
-    galleryRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-  };
+  // Display only the first 4 chairs including the 3D chair at index 0
+  const displayedItems = items.slice(0, 4);
 
   return (
     <section
@@ -228,26 +179,6 @@ export function CollectionSection() {
                 <span>Explore Collection</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
-
-              {/* Side-Slide Navigation Controls */}
-              <div className="flex items-center space-x-2 ml-1">
-                <button
-                  type="button"
-                  onClick={scrollPrev}
-                  aria-label="Previous products"
-                  className="w-9 h-9 rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white hover:bg-white/10 flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={scrollNext}
-                  aria-label="Next products"
-                  className="w-9 h-9 rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white hover:bg-white/10 flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
             </div>
           </div>
 
@@ -259,29 +190,17 @@ export function CollectionSection() {
         </div>
       </div>
 
-      {/* Horizontal Side-Slidable Furniture Gallery (Displays 4 cards on desktop viewport) */}
-      <div className="collection-gallery-wrapper w-full">
-        <div
-          ref={galleryRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onClickCapture={handleClickCapture}
-          className="w-full overflow-x-auto pt-4 pb-14 scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing scroll-smooth"
-          style={{ WebkitOverflowScrolling: "touch" }}
-        >
-          <div className="flex items-center gap-6 sm:gap-7 lg:gap-8 min-w-max px-6 sm:px-10 lg:px-14">
-            {items.map((item) => (
-              <ProductCard
-                key={item.id}
-                item={item}
-                isHovered={hoveredCardId === item.id}
-                onHover={setHoveredCardId}
-                className="collection-card-item shrink-0 snap-center"
-              />
-            ))}
-          </div>
+      {/* Curated 4-Chair Collection Display */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-6 xl:gap-8">
+          {displayedItems.map((item) => (
+            <ProductCard
+              key={item.id}
+              item={item}
+              isHovered={hoveredCardId === item.id}
+              onHover={setHoveredCardId}
+            />
+          ))}
         </div>
       </div>
     </section>
