@@ -97,7 +97,10 @@ export function ProductCard({
         </button>
 
         {/* Genuine transparent product cutout sitting directly against the warm sand card surface */}
-        <div className="relative w-full h-full p-4 sm:p-5 flex items-center justify-center">
+        <div
+          id={isFeatured ? "collection-chair-target" : undefined}
+          className="relative w-full h-full p-4 sm:p-5 flex items-center justify-center"
+        >
           {item.image ? (
             <div className="relative w-full h-full flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
               <Image

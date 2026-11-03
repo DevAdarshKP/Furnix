@@ -39,6 +39,13 @@ interface TargetMetrics {
   atelierHeight: number;
   atelierScale: number;
 
+  // Container D: Collection Section ("Our collection" Featured Product Card)
+  collDocX: number;
+  collDocY: number;
+  collWidth: number;
+  collHeight: number;
+  collScale: number;
+
   // Container E: Customisation Section ("Comfort, in your colour.")
   customDocX: number;
   customDocY: number;
@@ -51,22 +58,25 @@ interface TargetMetrics {
   travelEnd: number;                // Journey A -> B reaches Container B
   travelBtoAtelierStart: number;    // Journey B -> Atelier starts
   travelBtoAtelierEnd: number;      // Journey B -> Atelier settles in Atelier container
-  travelAtelierExit: number;        // Atelier begins exit (chair hides during Collection section)
-  travelCustomStart: number;        // Customisation approach starts (chair smoothly emerges towards Container E)
-  travelCustomEnd: number;          // Chair settles in Container E (Customisation)
+  travelAteliertoCollStart: number; // Journey Atelier -> Collection starts
+  travelAteliertoCollEnd: number;   // Journey Atelier -> Collection settles in Collection card
+  travelCtoDStart: number;          // Journey Collection -> Customisation starts
+  travelCtoDEnd: number;            // Journey Collection -> Customisation settles in Customisation
 
   isMeasured: boolean;
 }
 
 /**
  * Single Persistent 3D Chair Controller.
- * Preserves the single continuous 3D chair model across key hero and detail destinations:
+ * Preserves the single continuous 3D chair model across the entire experience:
  * 1. "Crafted for living" Resting: Centered in Container A (#editorial-chair-target).
  * 2. Travel Journey 1 (A -> B): Visibly arcs across the page from Container A into Container B (#product-chair-target).
  * 3. Product Detail Showcase: Rests in Container B, executing the 6-state detailing sequence and returning to complete overview.
  * 4. Travel Journey 2 (B -> C): Smooth diagonal trajectory into the dark statement section squircle (#atelier-chair-target).
- * 5. Collection Section: Cleanly hidden from the viewport to allow all catalog products to display smoothly without overlay collisions.
- * 6. Customisation Section: Seamlessly rises into Container E (#customisation-chair-target) with interactive color customisation.
+ * 5. Atelier Resting: Centered in Container C squircle.
+ * 6. Travel Journey 3 (C -> D): Smooth arc floating down into the featured collection card (#chair-card-destination / #collection-chair-target).
+ * 7. Collection Card 1 Resting: Seated in Card 1 with live horizontal tracking; cleanly hidden if Card 1 is scrolled out of viewport.
+ * 8. Travel Journey 4 (D -> E): Rises seamlessly into Container E (#customisation-chair-target) with interactive color customisation.
  */
 function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
   const chairGroupRef = useRef<THREE.Group>(null);
@@ -132,6 +142,12 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     atelierHeight: 180,
     atelierScale: 0.25,
 
+    collDocX: 0,
+    collDocY: 0,
+    collWidth: 360,
+    collHeight: 360,
+    collScale: 0.40,
+
     customDocX: 0,
     customDocY: 0,
     customWidth: 540,
@@ -142,9 +158,10 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     travelEnd: 2700,
     travelBtoAtelierStart: 3800,
     travelBtoAtelierEnd: 4400,
-    travelAtelierExit: 5000,
-    travelCustomStart: 5800,
-    travelCustomEnd: 6400,
+    travelAteliertoCollStart: 4900,
+    travelAteliertoCollEnd: 5500,
+    travelCtoDStart: 6100,
+    travelCtoDEnd: 6800,
 
     isMeasured: false,
   });
@@ -173,6 +190,7 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     const originElem = getVisibleElement("editorial-chair-target", "editorial-chair-target-mobile");
     const destElem = getVisibleElement("product-chair-target", "product-chair-target-mobile");
     const atelierElem = getVisibleElement("atelier-chair-target", "atelier-chair-target-mobile");
+    const collElem = getVisibleElement("chair-card-destination", "collection-chair-target");
     const customElem = getVisibleElement("customisation-chair-target", "customisation-chair-target");
 
     if (!originElem || !destElem) return;
@@ -212,6 +230,22 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       atelierDocY = destDocY + 800;
     }
 
+    // Measure Container D (Collection Featured Card)
+    let collDocX = 0;
+    let collDocY = 0;
+    let collWidth = 360;
+    let collHeight = 360;
+
+    if (collElem) {
+      const collRect = collElem.getBoundingClientRect();
+      collDocX = collRect.left + scrollX;
+      collDocY = collRect.top + scrollY;
+      collWidth = collRect.width || 360;
+      collHeight = collRect.height || 360;
+    } else {
+      collDocY = atelierDocY + 900;
+    }
+
     // Measure Container E (Customisation Section)
     let customDocX = 0;
     let customDocY = 0;
@@ -225,13 +259,14 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       customWidth = customRect.width || 540;
       customHeight = customRect.height || 540;
     } else {
-      customDocY = atelierDocY + 1600;
+      customDocY = collDocY + 1000;
     }
 
     // Proportional, balanced scaling leaving comfortable, visually balanced margins:
     // Container A (Editorial): 0.58 padding ensures complete chair, legs and arms fit comfortably without clipping
     // Container B (Product Detail): 0.59 padding ensures all 4 legs, arms, and backrest fit naturally
     // Container C (Atelier Section): 0.62 padding ensures snug, jewel-like fit inside the central rounded card
+    // Container D (Featured Collection Card): 0.55 padding ensures complete chair fits inside the card without clipping
     // Container E (Customisation Section): 0.54 padding ensures prominent, sculptural presence with clear leg clearance
     const originScale = calculateFitScale(
       originHeight,
@@ -260,6 +295,15 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       0.50
     );
 
+    const collScale = calculateFitScale(
+      collHeight,
+      modelHeight,
+      0,
+      camera as { position: { z: number }; fov: number },
+      size.height,
+      0.55
+    );
+
     const customScale = calculateFitScale(
       customHeight,
       modelHeight,
@@ -285,17 +329,25 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     const travelBtoAtelierStart = trackDocY + trackScrollDist;
     const travelBtoAtelierEnd = travelBtoAtelierStart + 750;
 
-    // 3. Atelier squircle settles and stays as long as Atelier is in view
-    const atelierSectionEl = typeof document !== "undefined" ? document.getElementById("atelier-statement") : null;
-    const atelierSectionDocY = atelierSectionEl ? atelierSectionEl.getBoundingClientRect().top + scrollY : atelierDocY;
-    const atelierSectionHeight = atelierSectionEl ? atelierSectionEl.offsetHeight : 750;
-    const travelAtelierExit = atelierSectionDocY + atelierSectionHeight - vh * 0.35;
+    const collSectionEl = typeof document !== "undefined" ? document.getElementById("collections") : null;
+    const collSectionDocY = collSectionEl ? collSectionEl.getBoundingClientRect().top + scrollY : collDocY - 300;
 
-    // 4. Customisation Entrance: Glide up into spotlight as user reaches Customisation section
+    // 3. Journey Atelier -> Collection (Atelier squircle -> Collection Card 1): 700px slow, visible glide
+    // Arrives and firmly settles the moment the collection section comes into view on the viewport
+    let travelAteliertoCollEnd = collSectionDocY;
+    let travelAteliertoCollStart = Math.max(travelBtoAtelierEnd + 100, travelAteliertoCollEnd - 700);
+
     const customSectionEl = typeof document !== "undefined" ? document.getElementById("customisation") : null;
     const customSectionDocY = customSectionEl ? customSectionEl.getBoundingClientRect().top + scrollY : customDocY - 100;
-    const travelCustomStart = customSectionDocY - vh * 0.55;
-    const travelCustomEnd = customSectionDocY - vh * 0.05;
+
+    // 4. Journey Collection -> Customisation: 650px slow, visible glide into warm spotlight
+    // Remains seated in Card 1 until scrolling out of the collection section towards customisation
+    let travelCtoDStart = customSectionDocY - 650;
+    let travelCtoDEnd = customSectionDocY;
+    if (travelCtoDStart < travelAteliertoCollEnd + 250) {
+      travelCtoDStart = travelAteliertoCollEnd + 250;
+      travelCtoDEnd = travelCtoDStart + 650;
+    }
 
     // Ensure initial placement snaps cleanly without lag
     isPosInitializedRef.current = false;
@@ -316,6 +368,11 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       atelierWidth,
       atelierHeight,
       atelierScale,
+      collDocX,
+      collDocY,
+      collWidth,
+      collHeight,
+      collScale,
       customDocX,
       customDocY,
       customWidth,
@@ -325,9 +382,10 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       travelEnd,
       travelBtoAtelierStart,
       travelBtoAtelierEnd,
-      travelAtelierExit,
-      travelCustomStart,
-      travelCustomEnd,
+      travelAteliertoCollStart,
+      travelAteliertoCollEnd,
+      travelCtoDStart,
+      travelCtoDEnd,
       isMeasured: true,
     };
   }, [camera, size.height, getVisibleElement]);
@@ -380,6 +438,7 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     const originElem = getVisibleElement("editorial-chair-target", "editorial-chair-target-mobile");
     const destElem = getVisibleElement("product-chair-target", "product-chair-target-mobile");
     const atelierElem = getVisibleElement("atelier-chair-target", "atelier-chair-target-mobile");
+    const collElem = getVisibleElement("chair-card-destination", "collection-chair-target");
     const customElem = getVisibleElement("customisation-chair-target", "customisation-chair-target");
 
     if (!originElem || !destElem) return;
@@ -391,6 +450,7 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     const originRect = originElem.getBoundingClientRect();
     const destRect = destElem.getBoundingClientRect();
     const atelierRect = atelierElem ? atelierElem.getBoundingClientRect() : null;
+    const collRect = collElem ? collElem.getBoundingClientRect() : null;
     const customRect = customElem ? customElem.getBoundingClientRect() : null;
 
     const m = metricsRef.current;
@@ -404,6 +464,7 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       originRect.top >= vh &&
       destRect.top >= vh &&
       (!atelierRect || atelierRect.top >= vh) &&
+      (!collRect || collRect.top >= vh) &&
       (!customRect || customRect.top >= vh)
     ) {
       chairGroupRef.current.visible = false;
@@ -444,8 +505,18 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     const atelierScreenX = atelierRect ? atelierRect.left + atelierRect.width * 0.50 : vw * 0.50;
     const atelierScreenY = atelierRect ? atelierRect.top + atelierRect.height * 0.52 : vh * 0.50;
 
+    const collScreenX = collRect ? collRect.left + collRect.width * 0.50 : originScreenX;
+    const collScreenY = collRect ? collRect.top + collRect.height * 0.44 : vh * 0.50;
+
     const customScreenX = customRect ? customRect.left + customRect.width * 0.50 : vw * 0.50;
     const customScreenY = customRect ? customRect.top + customRect.height * 0.48 : vh * 0.50;
+
+    // Check if Card 1 is visible in the viewport (horizontal & vertical bounds)
+    const isCard1Visible = collRect !== null &&
+      collRect.right > 24 &&
+      collRect.left < vw - 24 &&
+      collRect.bottom > 0 &&
+      collRect.top < vh;
 
     // =========================================================================
     // STAGE 1: Resting in "Crafted for living" Container A
@@ -658,7 +729,7 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     // =========================================================================
     // STAGE 5: Settled in Container C (Atelier Section Small Center Container)
     // =========================================================================
-    else if (scrollY < m.travelAtelierExit) {
+    else if (scrollY < m.travelAteliertoCollStart) {
       targetScreenX = atelierScreenX;
       targetScreenY = atelierScreenY;
       targetScale = m.atelierScale;
@@ -686,43 +757,124 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
       }
     }
     // =========================================================================
-    // STAGE 6: Collection Section (Hide 3D chair from viewport for pristine catalog UX)
+    // STAGE 6: Travel Atelier -> Collection (Atelier Container to Featured Collection Card)
+    // Slower, detailing and visible cinematic flight path
     // =========================================================================
-    else if (scrollY < m.travelCustomStart) {
-      // Hide the persistent 3D chair completely from the viewport during the Collections section
-      // to give the collection gallery a clean, responsive, 100% bug-free experience (especially when new products are added)
-      chairGroupRef.current.visible = false;
+    else if (scrollY < m.travelAteliertoCollEnd) {
+      chairGroupRef.current.visible = true;
+      const p = Math.min(1, Math.max(0, (scrollY - m.travelAteliertoCollStart) / Math.max(1, m.travelAteliertoCollEnd - m.travelAteliertoCollStart)));
+      const t = smootherstep(m.travelAteliertoCollStart, m.travelAteliertoCollEnd, scrollY);
+
+      // Trajectory from Atelier center container to Collection featured card
+      const targetCollX = isCard1Visible ? collScreenX : originScreenX;
+      const targetCollY = collRect ? collScreenY : destScreenY + 600;
+
+      const linearX = THREE.MathUtils.lerp(atelierScreenX, targetCollX, t);
+      const linearY = THREE.MathUtils.lerp(atelierScreenY, targetCollY, t);
+
+      // Majestic 3D travel arc floating forward into the room
+      const arc = Math.sin(p * Math.PI);
+      const arcY = -arc * (vh * 0.06);
+      const arcX = arc * (vw * 0.03);
+
+      targetScreenX = linearX + arcX;
+      targetScreenY = linearY + arcY;
+      targetZ = reducedMotion ? 0 : arc * 0.48;
+
+      // Gradual scale up toward collection card size
+      targetScale = THREE.MathUtils.lerp(m.atelierScale, m.collScale, t);
+
+      // Expressive 3D rotation showcasing the chair's sculptural curves and wooden joinery in flight
+      targetRotX = THREE.MathUtils.lerp(0.05, 0.06, t) + (reducedMotion ? 0 : arc * 0.04);
+      targetRotY = THREE.MathUtils.lerp(-0.22, -0.28, t) - (reducedMotion ? 0 : arc * 0.22);
+      targetRotZ = reducedMotion ? 0 : arc * 0.04;
+
+      // Unclipped during travel so chair is completely visible moving between sections
       gl.domElement.style.clipPath = "none";
-      return;
     }
     // =========================================================================
-    // STAGE 7: Entering Container E (Customisation Section Spotlight Entrance)
+    // STAGE 7: Settled in Container D (Featured Product Card in Collection Section)
     // =========================================================================
-    else if (scrollY < m.travelCustomEnd) {
-      chairGroupRef.current.visible = true;
-      const pCD = Math.min(1, Math.max(0, (scrollY - m.travelCustomStart) / Math.max(1, m.travelCustomEnd - m.travelCustomStart)));
-      const tCD = smootherstep(m.travelCustomStart, m.travelCustomEnd, scrollY);
+    else if (scrollY < m.travelCtoDStart) {
+      // If Card 1 is scrolled out of viewport (e.g. user browsing new products horizontally), cleanly hide 3D chair
+      if (!isCard1Visible) {
+        chairGroupRef.current.visible = false;
+        gl.domElement.style.clipPath = "none";
+        return;
+      }
 
-      const startY = customScreenY + vh * 0.14;
-      const linearX = customScreenX;
+      chairGroupRef.current.visible = true;
+
+      const activeCollScale = collRect
+        ? calculateFitScale(
+            collRect.height,
+            modelHeightRef.current || 0.94,
+            0,
+            camera as { position: { z: number }; fov: number },
+            size.height,
+            0.55
+          )
+        : m.collScale;
+
+      targetScreenX = collScreenX;
+      targetScreenY = collScreenY;
+      targetScale = activeCollScale;
+      targetRotX = 0.06;
+      targetRotY = -0.28;
+      targetRotZ = 0;
+      targetZ = 0;
+
+      // Clip to Container D rounded card boundary when settled
+      if (collRect) {
+        const top = Math.max(0, Math.round(collRect.top));
+        const right = Math.max(0, Math.round(vw - collRect.right));
+        const bottom = Math.max(0, Math.round(vh - collRect.bottom));
+        const left = Math.max(0, Math.round(collRect.left));
+        const radius = "2rem";
+        gl.domElement.style.clipPath = `inset(${top}px ${right}px ${bottom}px ${left}px round ${radius})`;
+      } else {
+        gl.domElement.style.clipPath = "none";
+      }
+    }
+    // =========================================================================
+    // STAGE 8: Travel D -> E (Collection Card to Customisation Section)
+    // Slower, detailing and visible cinematic flight path into warm spotlight
+    // =========================================================================
+    else if (scrollY < m.travelCtoDEnd) {
+      chairGroupRef.current.visible = true;
+      const pCD = Math.min(1, Math.max(0, (scrollY - m.travelCtoDStart) / Math.max(1, m.travelCtoDEnd - m.travelCtoDStart)));
+      const tCD = smootherstep(m.travelCtoDStart, m.travelCtoDEnd, scrollY);
+
+      // If Card 1 is visible, smoothly emerge from Card 1; otherwise, emerge from center of collection section
+      const startX = isCard1Visible ? collScreenX : customScreenX;
+      const startY = collRect ? collScreenY : (customScreenY - vh * 0.25);
+
+      // Smooth diagonal trajectory from Container D to Container E (center of customisation section)
+      const linearX = THREE.MathUtils.lerp(startX, customScreenX, tCD);
       const linearY = THREE.MathUtils.lerp(startY, customScreenY, tCD);
 
+      // Majestic 3D travel arc floating towards the user into the customisation studio
       const arc = Math.sin(pCD * Math.PI);
-      const arcY = -arc * (vh * 0.04);
+      const arcY = -arc * (vh * 0.06);
+      const arcX = arc * (vw * 0.025);
 
-      targetScreenX = linearX;
+      targetScreenX = linearX + arcX;
       targetScreenY = linearY + arcY;
-      targetZ = reducedMotion ? 0 : arc * 0.25;
+      targetZ = reducedMotion ? 0 : arc * 0.50;
 
-      targetScale = THREE.MathUtils.lerp(m.customScale * 0.85, m.customScale, tCD);
-      targetRotX = THREE.MathUtils.lerp(0.04, 0.06, tCD);
-      targetRotY = THREE.MathUtils.lerp(-0.24, -0.32, tCD);
-      targetRotZ = 0;
+      // Gradual scale up toward customisation hero size
+      targetScale = THREE.MathUtils.lerp(m.collScale, m.customScale, tCD);
 
+      // Expressive 3D rotation showcasing the upholstery and form before landing
+      targetRotX = THREE.MathUtils.lerp(0.06, 0.06, tCD) + (reducedMotion ? 0 : arc * 0.035);
+      targetRotY = THREE.MathUtils.lerp(-0.28, -0.32, tCD) + (reducedMotion ? 0 : arc * 0.24);
+      targetRotZ = reducedMotion ? 0 : -arc * 0.04;
+
+      // Unclipped during travel so chair is completely visible moving between sections
       gl.domElement.style.clipPath = "none";
     }
     // =========================================================================
-    // STAGE 8: Settled in Container E (Customisation Section)
+    // STAGE 9: Settled in Container E (Customisation Section)
     // =========================================================================
     else {
       chairGroupRef.current.visible = true;
@@ -787,24 +939,24 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
     );
 
     // Remove unwanted flat shadow from customisation section only,
-    // while strictly preserving shadows in Hero, Detailing, and Atelier sections.
+    // while strictly preserving shadows in Hero, Detailing, Atelier, and Collection sections.
     if (contactShadowGroupRef.current) {
-      contactShadowGroupRef.current.visible = scrollY < m.travelCustomStart;
+      contactShadowGroupRef.current.visible = scrollY < m.travelCtoDStart;
     }
 
     // 3D Chair Colour Customisation:
     // When chair rests in customisation section, interpolate upholstery to user-selected colourway
     // (Yellow, Light Green, Grey) in ~300ms.
-    // When scrolled back up into Atelier / Detail / Editorial, smoothly restore original white tint (#FFFFFF).
+    // When scrolled back up into Collection / Atelier / Detail / Editorial, smoothly restore original yellow (#FFB800).
     const activeColor = getChairColor();
     const destinationTint = new THREE.Color(activeColor.tintHex);
     const originalColor = new THREE.Color("#FFB800");
 
     const customMix =
-      scrollY >= m.travelCustomStart
-        ? scrollY >= m.travelCustomEnd
+      scrollY >= m.travelCtoDStart
+        ? scrollY >= m.travelCtoDEnd
           ? 1.0
-          : (scrollY - m.travelCustomStart) / Math.max(1, m.travelCustomEnd - m.travelCustomStart)
+          : (scrollY - m.travelCtoDStart) / Math.max(1, m.travelCtoDEnd - m.travelCtoDStart)
         : 0.0;
 
     const targetColor = originalColor.clone().lerp(destinationTint, customMix);
@@ -815,9 +967,10 @@ function ContinuousChairController({ modelUrl }: { modelUrl?: string }) {
         scrollY,
         travelBtoAtelierStart: m.travelBtoAtelierStart,
         travelBtoAtelierEnd: m.travelBtoAtelierEnd,
-        travelAtelierExit: m.travelAtelierExit,
-        travelCustomStart: m.travelCustomStart,
-        travelCustomEnd: m.travelCustomEnd,
+        travelAteliertoCollStart: m.travelAteliertoCollStart,
+        travelAteliertoCollEnd: m.travelAteliertoCollEnd,
+        travelCtoDStart: m.travelCtoDStart,
+        travelCtoDEnd: m.travelCtoDEnd,
         customMix,
         activeColorId: activeColor.id,
         targetColor: targetColor.getHexString(),
@@ -876,10 +1029,15 @@ function isWebGLAvailable(): boolean {
  * to guarantee zero model spill outside containers.
  */
 export function ChairScene({ className = "", modelUrl }: ChairSceneProps) {
-  const isClient = useSyncExternalStore(emptySubscribe, () => true, () => false);
-  const hasWebGL = useSyncExternalStore(emptySubscribe, isWebGLAvailable, () => false);
+  const [mounted, setMounted] = React.useState(false);
 
-  if (!isClient || !hasWebGL) {
+  React.useEffect(() => {
+    if (isWebGLAvailable()) {
+      setMounted(true);
+    }
+  }, []);
+
+  if (!mounted) {
     return null;
   }
 

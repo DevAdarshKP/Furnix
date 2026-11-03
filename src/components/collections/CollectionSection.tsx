@@ -7,6 +7,19 @@ import { ProductCard, CollectionItem } from "./ProductCard";
 
 const COLLECTION_ITEMS: CollectionItem[] = [
   {
+    id: "day-241-shack15-armchair",
+    name: "Bolle Lounge Chair",
+    category: "Living & Lounge",
+    price: "$2,850",
+    priceNum: 2850,
+    image: "/images/chair_thumb_yellow.png",
+    isFeatured: true,
+    material: "Solid European Oak with hand-tufted saffron wool bouclé",
+    dimensions: "84 W × 88 D × 78 H cm (Seat 42 cm)",
+    description: "Our signature archival lounge chair documented in San Francisco’s historic Ferry Building.",
+    inStock: true,
+  },
+  {
     id: "cyan-armchair",
     name: "Cyan Dining Chair",
     category: "Dining & Accent",
@@ -30,19 +43,6 @@ const COLLECTION_ITEMS: CollectionItem[] = [
     material: "Vibrant royal cobalt bouclé with sculpted ash wood dowels",
     dimensions: "82 W × 86 D × 88 H cm (Seat 44 cm)",
     description: "A plush modular armchair with deep button tufting and ergonomic contoured armrests.",
-    inStock: true,
-  },
-  {
-    id: "day-241-shack15-armchair",
-    name: "Bolle Lounge Chair",
-    category: "Living & Lounge",
-    price: "$2,850",
-    priceNum: 2850,
-    image: "/images/chair_thumb_yellow.png",
-    isFeatured: true,
-    material: "Solid European Oak with hand-tufted saffron wool bouclé",
-    dimensions: "84 W × 88 D × 78 H cm (Seat 42 cm)",
-    description: "Our signature archival lounge chair documented in San Francisco’s historic Ferry Building.",
     inStock: true,
   },
   {
@@ -87,7 +87,7 @@ const COLLECTION_ITEMS: CollectionItem[] = [
 ];
 
 function mapToCollectionItem(p: any): CollectionItem {
-  const isDefault3D = p.id === "day-241-shack15-armchair" || Boolean(p.is3D);
+  const isDefault3D = p.id === "day-241-shack15-armchair";
   return {
     id: p.id,
     name: p.name,
@@ -123,6 +123,12 @@ export function CollectionSection() {
         const data = await res.json();
         if (data.success && Array.isArray(data.products) && data.products.length > 0 && isMounted) {
           const liveItems = data.products.map(mapToCollectionItem);
+          // Always ensure the signature 3D Bolle Lounge Chair remains Card 1 (index 0)
+          const featuredIdx = liveItems.findIndex((it: CollectionItem) => it.id === "day-241-shack15-armchair");
+          if (featuredIdx > 0) {
+            const [featuredItem] = liveItems.splice(featuredIdx, 1);
+            liveItems.unshift(featuredItem);
+          }
           setItems(liveItems);
         }
       } catch (err) {
