@@ -173,7 +173,7 @@ export function CollectionSection() {
             </h2>
             <div className="flex items-center gap-3">
               <Link
-                href="#collections"
+                href="/products"
                 className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-full border border-white/40 text-xs font-semibold text-white hover:bg-white hover:text-black transition-all duration-200 cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <span>Explore Collection</span>

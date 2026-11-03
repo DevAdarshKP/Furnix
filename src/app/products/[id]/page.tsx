@@ -1,5 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Metadata } from "next";
 import { getProductById, getAllProducts } from "@/lib/products";
 import { SingleProductView } from "@/components/product/SingleProductView";
@@ -25,6 +26,7 @@ export function generateStaticParams() {
 
 async function getLiveProduct(id: string) {
   try {
+    await connection();
     await connectToDatabase();
     const dbProduct = await Product.findOne({ id }).lean();
     if (dbProduct) {
